@@ -12,6 +12,7 @@ describe("cv data", () => {
     expect(cv.stats).toHaveLength(3);
     expect(cv.education).toBeDefined();
     expect(cv.experience).toHaveLength(4);
+    expect(cv.projects.length).toBeGreaterThanOrEqual(5);
     expect(cv.research).toHaveLength(1);
     expect(cv.leadership).toHaveLength(2);
     expect(cv.skillGroups).toHaveLength(3);

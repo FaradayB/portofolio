@@ -21,10 +21,16 @@ describe("ChatPanel", () => {
     expect(screen.getByText(/WebGPU/i)).toBeInTheDocument();
   });
 
-  it("loads the model then answers a question by streaming", async () => {
+  it("does not load the model until the visitor opts in", () => {
+    render(<ChatPanel engine={mockEngine("hi")} webGpuAvailable={true} />);
+    expect(screen.getByRole("button", { name: /start companion/i })).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText(/ask/i)).not.toBeInTheDocument();
+  });
+
+  it("loads on opt-in then answers a question by streaming", async () => {
     const user = userEvent.setup();
     render(<ChatPanel engine={mockEngine("Faraday is an AI Engineer")} webGpuAvailable={true} />);
-    // wait for init to finish and input to enable
+    await user.click(screen.getByRole("button", { name: /start companion/i }));
     const input = await screen.findByPlaceholderText(/ask/i);
     await user.type(input, "What does he do?");
     await user.click(screen.getByRole("button", { name: /send/i }));

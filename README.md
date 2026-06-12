@@ -5,8 +5,10 @@ A single-page CV styled as the *Trails of Cold Steel* **Camp Menu**, built with
 **Qwen** model entirely in your browser via [WebLLM](https://github.com/mlc-ai/web-llm)
 (WebGPU) — **no backend, no API keys, no server costs.**
 
-- 8 CV sections (Profile, Education, Experience, Research, Leadership, Skills,
-  Certifications, Contact) + a 9th **Companion** chat section.
+- 9 CV sections (Profile, Education, Experience, **Records/Projects**, Research, Leadership,
+  Skills, Certifications, Contact) + a 10th **Companion** chat section.
+- The Companion is **opt-in**: the model only downloads after the visitor clicks
+  "Start Companion".
 - All resume content lives in one typed file: `src/data/cv.ts`. Edit it in one place and
   both the rendered sections **and** the chatbot's knowledge update.
 - Designed to deploy free on **Vercel** (or any static host). Development runs entirely in
@@ -143,8 +145,16 @@ vercel.json          # Vite build + SPA rewrite + headers
 
 ## Editing your CV
 
-Open **`src/data/cv.ts`** and edit the fields — name, bio, experience, skills, etc. Both
-the on-screen sections and the Companion chatbot's answers update from this one file.
+Open **`src/data/cv.ts`** and edit the fields — name, bio, experience, **projects**,
+skills, etc. Both the on-screen sections and the Companion chatbot's answers update from
+this one file. Add `repo`/`demo` URLs to any project in `cv.projects` to show `[Repo ↗]` /
+`[Demo ↗]` links on its card.
+
+**Profile photo:** drop a square image at **`public/profile.jpg`** to replace the crest
+icon in the header. If the file is absent, the crest icon shows instead.
+
+**Download CV:** the Profile section links `public/CV-FARADAY BARR FATAHILLAH-1.pdf` via
+`cv.resumePdf` — swap that file (or the path) to change it.
 
 To change the chatbot model (e.g. to a larger Qwen), edit `MODEL_ID` in
 `src/chat/engine.ts`. Use one of the model ids listed by `@mlc-ai/web-llm`'s

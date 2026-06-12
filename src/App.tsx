@@ -6,6 +6,7 @@ import { sections, SectionId } from "./data/sections";
 import Profile from "./sections/Profile";
 import Education from "./sections/Education";
 import Experience from "./sections/Experience";
+import Records from "./sections/Records";
 import Research from "./sections/Research";
 import Leadership from "./sections/Leadership";
 import Skills from "./sections/Skills";
@@ -17,6 +18,7 @@ const views: Record<SectionId, JSX.Element> = {
   profile: <Profile />,
   education: <Education />,
   experience: <Experience />,
+  records: <Records />,
   research: <Research />,
   leadership: <Leadership />,
   skills: <Skills />,

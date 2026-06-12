@@ -16,6 +16,14 @@ export interface SkillGroup {
   skills: Skill[];
 }
 
+export interface Project {
+  title: string;
+  tech: string[];
+  description: string;
+  repo?: string; // optional GitHub URL — fill in when available
+  demo?: string; // optional live demo URL — fill in when available
+}
+
 export interface Certification {
   title: string;
   sub: string;
@@ -34,9 +42,11 @@ export interface CV {
   bio: string;
   emailHint: string;
   githubHint: string;
+  resumePdf: string; // path to the downloadable CV (served from public/)
   stats: string[];
   education: Entry;
   experience: Entry[];
+  projects: Project[];
   research: Entry[];
   leadership: Entry[];
   skillGroups: SkillGroup[];
@@ -54,6 +64,7 @@ export const cv: CV = {
     "Computer Engineering graduate, Telkom University — highest GPA in my major.",
   emailHint: "faradaybarrf@gmail.com",
   githubHint: "github.com/FaradayB",
+  resumePdf: "/CV-FARADAY%20BARR%20FATAHILLAH-1.pdf",
   stats: ["GPA 3.88", "250+ Students Mentored", "Top of Major"],
   education: {
     title: "Bachelor of Computer Engineering",
@@ -97,6 +108,44 @@ export const cv: CV = {
       body:
         "Assisted 5 courses including IoT and Control Systems. Contributed to course " +
         "materials, assessments, and grading.",
+    },
+  ],
+  projects: [
+    {
+      title: "AI Predictive Maintenance",
+      tech: ["GCP", "Docker", "FastAPI", "Prometheus", "Grafana"],
+      description:
+        "End-to-end predictive maintenance system on GCP with a containerized FastAPI " +
+        "service, monitored via Prometheus and Grafana dashboards.",
+      // repo: "https://github.com/FaradayB/...",
+      // demo: "https://...",
+    },
+    {
+      title: "RAG Chatbot",
+      tech: ["Azure AI Foundry", "LangChain", "Azure AI Search", "Blob Storage"],
+      description:
+        "Retrieval-augmented chatbot grounded on document search, with prompt " +
+        "engineering for grounding and token efficiency validated via Azure Evaluations.",
+    },
+    {
+      title: "SugarCare",
+      tech: ["TensorFlow", "Python", "Streamlit"],
+      description:
+        "Diabetes prediction app reaching 83% accuracy — Bangkit Academy ML capstone.",
+    },
+    {
+      title: "Fall Detection",
+      tech: ["YOLOv8", "Computer Vision", "Android"],
+      description:
+        "Real-time fall detection research using YOLOv8, with debugging support and " +
+        "hardware-software coordination.",
+    },
+    {
+      title: "RFID Inventory Management",
+      tech: ["RFID", "Android (Kotlin)"],
+      description:
+        "RFID-based inventory system with a companion Android app; led the system " +
+        "experiments end to end.",
     },
   ],
   research: [

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   ChatEngine, ChatMessage, WebLLMEngine, isWebGpuAvailable,
 } from "./engine";
@@ -21,17 +21,6 @@ export default function ChatPanel({
   const [log, setLog] = useState<{ role: "user" | "assistant"; text: string }[]>([]);
   const [draft, setDraft] = useState("");
 
-  useEffect(() => {
-    if (!webGpuAvailable) return;
-    let cancelled = false;
-    setStatus("loading");
-    engineRef.current
-      .init((p) => { if (!cancelled) setProgress(`${p.text} ${Math.round(p.progress * 100)}%`); })
-      .then(() => { if (!cancelled) setStatus("ready"); })
-      .catch((e) => { if (!cancelled) { setProgress(String(e)); setStatus("idle"); } });
-    return () => { cancelled = true; };
-  }, [webGpuAvailable]);
-
   if (!webGpuAvailable) {
     return (
       <div className="chat">
@@ -39,6 +28,33 @@ export default function ChatPanel({
           The CV Companion needs a WebGPU-capable browser (recent Chrome, Edge, or
           Firefox) to run the on-device model. Meanwhile, browse the sections on the left.
         </p>
+      </div>
+    );
+  }
+
+  // Opt-in: the ~350 MB model only downloads after the visitor clicks Start.
+  function start() {
+    setStatus("loading");
+    engineRef.current
+      .init((p) => setProgress(`${p.text} ${Math.round(p.progress * 100)}%`))
+      .then(() => setStatus("ready"))
+      .catch((e) => { setProgress(String(e)); setStatus("idle"); });
+  }
+
+  if (status === "idle") {
+    return (
+      <div className="chat">
+        <div className="chat-start">
+          <p className="chat-fallback">
+            Ask the <strong>CV Companion</strong> anything about my experience. It runs a
+            small Qwen language model <strong>entirely in your browser</strong> — private,
+            no server. The first launch downloads the model (~350&nbsp;MB) once, then it's
+            cached.
+          </p>
+          <button className="chat-send" type="button" onClick={start}>
+            Start Companion
+          </button>
+        </div>
       </div>
     );
   }
@@ -71,7 +87,7 @@ export default function ChatPanel({
 
   return (
     <div className="chat">
-      {status !== "ready" && status !== "thinking" && (
+      {status === "loading" && (
         <div className="chat-status">Loading Companion… {progress}</div>
       )}
       <div className="chat-log">

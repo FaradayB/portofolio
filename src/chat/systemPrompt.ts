@@ -11,6 +11,9 @@ export function buildSystemPrompt(): string {
   const skills = cv.skillGroups
     .map((g) => `${g.category}: ${g.skills.map((s) => s.name).join(", ")}`)
     .join("\n");
+  const projects = cv.projects
+    .map((p) => `- ${p.title} [${p.tech.join(", ")}]: ${p.description}`)
+    .join("\n");
   const certs = cv.certifications.map((c) => `- ${c.title} (${c.sub})`).join("\n");
   const contact = cv.contact.map((c) => `${c.label}: ${c.value}`).join("\n");
 
@@ -29,6 +32,9 @@ export function buildSystemPrompt(): string {
     ``,
     `Experience:`,
     entryLines("Experience", cv.experience),
+    ``,
+    `Projects:`,
+    projects,
     ``,
     `Research:`,
     entryLines("Research", cv.research),

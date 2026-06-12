@@ -8,6 +8,7 @@ describe("buildSystemPrompt", () => {
     expect(p).toContain("AI Engineer");
     expect(p).toContain("3.88");
     expect(p).toContain("AI Engineer Bootcamp Trainee");
+    expect(p).toContain("RAG Chatbot");
   });
 
   it("instructs the model to answer only from the CV", () => {
