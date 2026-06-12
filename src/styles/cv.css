@@ -1,0 +1,160 @@
+:root {
+  color-scheme: dark;
+  --gold: #c8a830;
+  --gold-bright: #e8d49a;
+  --gold-mid: #c9a84c;
+  --ink: #1a1e28;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Cinzel", serif;
+  color: #e8e2cc;
+  background:
+    linear-gradient(to top, #2e3d4a 0%, #4a6070 30%, #7a95a8 70%, #8faabb 100%);
+  min-height: 100vh;
+}
+
+/* honeycomb overlay */
+.honeycomb {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.app {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 18px;
+}
+
+/* ---------- Header ---------- */
+.header { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; gap: 18px; }
+.header-left { display: flex; align-items: center; gap: 14px; }
+.crest {
+  width: 54px; height: 54px; border-radius: 50%;
+  background: #1a1e28; border: 2px solid var(--gold);
+  display: grid; place-items: center; color: var(--gold); font-size: 26px;
+}
+.header-name {
+  font-weight: 700; font-size: 22px; color: #e8d070;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.53); letter-spacing: 1px;
+}
+.header-rule { height: 3px; background: #b82020; margin: 4px 0; width: 100%; }
+.header-role { font-size: 11px; letter-spacing: 3px; color: #e8b840; }
+.header-hints { text-align: right; font-size: 12px; color: #ddd8c0; line-height: 1.9; }
+.header-hints i { color: var(--gold); margin-right: 4px; }
+
+/* ---------- Layout body ---------- */
+.body { display: grid; grid-template-columns: 180px 1fr; gap: 24px; padding: 8px 0 24px; }
+
+/* ---------- Sidebar ---------- */
+.sidebar { display: flex; flex-direction: column; gap: 10px; }
+.navbtn {
+  display: flex; align-items: center; gap: 10px;
+  width: 148px; height: 34px; padding: 0 8px;
+  border-radius: 17px; cursor: pointer;
+  background: linear-gradient(to bottom, #d8dce4, #b8bcc8, #9ca0b0, #c0c4d0);
+  border: 1px solid #b0b8c0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.27), inset 0 1px 0 rgba(255,255,255,0.67);
+  font-family: "Cinzel", serif;
+}
+.navbtn .badge {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: linear-gradient(to bottom, #d0d4dc, #9098a8);
+  border: 1px solid #a0a8b8; display: grid; place-items: center;
+  color: #2a2e3a; font-size: 14px; flex: none;
+}
+.navbtn .label { font-size: 12px; letter-spacing: 2px; color: #2a2e3a; }
+.navbtn.active {
+  background: linear-gradient(to bottom, #e8d890, #c8a830, #a07820, #c0a040);
+  border: 1px solid #e8c840;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,240,0.5);
+}
+.navbtn.active .label { color: #1a1200; }
+
+/* ---------- Main content ---------- */
+.main { min-height: 360px; }
+.card {
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-left: 3px solid var(--gold);
+  border-radius: 3px; padding: 12px 14px; margin-bottom: 10px;
+}
+.card-title { font-size: 13px; color: var(--gold-bright); font-weight: 700; }
+.card-sub { font-size: 11px; color: var(--gold-mid); margin: 2px 0 6px; }
+.card-body { font-size: 10px; color: #a09878; line-height: 1.7; }
+
+/* Profile */
+.profile { text-align: center; padding-top: 8px; }
+.diamond { color: var(--gold); font-size: 22px; }
+.profile-role { font-size: 30px; color: var(--gold-bright); margin: 8px 0; }
+.profile-bio { font-size: 11px; color: #cfc8ad; line-height: 1.8; max-width: 620px; margin: 0 auto 16px; }
+.stat-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.stat-pill { border: 1px solid var(--gold); border-radius: 14px; padding: 5px 12px; font-size: 10px; color: var(--gold-bright); }
+
+/* Skills */
+.skill-group-head { font-size: 12px; color: var(--gold-bright); letter-spacing: 2px; margin: 14px 0 8px; }
+.skill-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.skill-label { font-size: 10px; letter-spacing: 1px; color: #c8b880; min-width: 140px; }
+.skill-track {
+  flex: 1; height: 9px; border-radius: 1px;
+  background: rgba(26,32,40,0.53); border: 1px solid rgba(255,255,255,0.13);
+  overflow: hidden;
+}
+.skill-fill { height: 100%; }
+
+/* Certifications */
+.cert { display: flex; flex-direction: column; }
+.cert .card-sub { margin-bottom: 0; }
+
+/* Contact */
+.contact { display: flex; flex-direction: column; gap: 14px; align-items: center; padding-top: 8px; }
+.contact-item { display: flex; align-items: center; gap: 12px; font-size: 13px; }
+.contact-item i { color: var(--gold); font-size: 20px; }
+.contact-label { color: var(--gold-mid); min-width: 80px; }
+.contact-value { color: var(--gold-bright); text-decoration: none; }
+.contact-div { color: var(--gold); opacity: 0.6; }
+
+/* ---------- Footer ---------- */
+.footer {
+  display: flex; justify-content: space-between; align-items: center;
+  background: rgba(26,30,40,0.8); border-top: 2px solid var(--gold);
+  padding: 8px 14px; font-size: 10px; color: #c0b890;
+}
+.footer .hint i { color: var(--gold); margin-right: 6px; }
+.footer-right { text-align: right; line-height: 1.5; }
+
+/* ---------- Chat / Companion ---------- */
+.chat { display: flex; flex-direction: column; height: 420px; }
+.chat-log { flex: 1; overflow-y: auto; padding-right: 6px; }
+.chat-msg { margin-bottom: 8px; }
+.chat-msg .card-sub { text-transform: uppercase; }
+.chat-form { display: flex; gap: 8px; margin-top: 10px; }
+.chat-input {
+  flex: 1; background: rgba(0,0,0,0.25); border: 1px solid var(--gold);
+  border-radius: 3px; color: #e8e2cc; font-family: "Cinzel", serif;
+  font-size: 11px; padding: 8px 10px;
+}
+.chat-send {
+  background: linear-gradient(to bottom, #e8d890, #c8a830, #a07820);
+  border: 1px solid #e8c840; border-radius: 3px; color: #1a1200;
+  font-family: "Cinzel", serif; font-size: 11px; padding: 0 14px; cursor: pointer;
+}
+.chat-send:disabled { opacity: 0.5; cursor: default; }
+.chat-status { font-size: 10px; color: var(--gold-mid); margin-bottom: 8px; }
+.chat-fallback { font-size: 11px; color: #cfc8ad; line-height: 1.8; }
+
+@media (max-width: 760px) {
+  .body { grid-template-columns: 1fr; }
+  .sidebar { flex-direction: row; flex-wrap: wrap; }
+}
