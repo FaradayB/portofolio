@@ -16,8 +16,9 @@ function mockEngine(reply: string): ChatEngine {
 }
 
 describe("ChatPanel", () => {
-  it("shows a fallback when WebGPU is unavailable", () => {
+  it("still offers to start (via the hosted engine) when WebGPU is unavailable", () => {
     render(<ChatPanel engine={mockEngine("hi")} webGpuAvailable={false} />);
+    expect(screen.getByRole("button", { name: /start companion/i })).toBeInTheDocument();
     expect(screen.getByText(/WebGPU/i)).toBeInTheDocument();
   });
 
@@ -35,5 +36,24 @@ describe("ChatPanel", () => {
     await user.type(input, "What does he do?");
     await user.click(screen.getByRole("button", { name: /send/i }));
     expect(await screen.findByText(/Faraday is an AI Engineer/)).toBeInTheDocument();
+  });
+
+  it("shows an error and stays usable when the engine fails", async () => {
+    const failingEngine: ChatEngine = {
+      init: async (onProgress: (p: InitProgress) => void) => {
+        onProgress({ text: "loading", progress: 1 });
+      },
+      ask: async function* () {
+        throw new Error("network down");
+      },
+    };
+    const user = userEvent.setup();
+    render(<ChatPanel engine={failingEngine} webGpuAvailable={true} />);
+    await user.click(screen.getByRole("button", { name: /start companion/i }));
+    const input = await screen.findByPlaceholderText(/ask/i);
+    await user.type(input, "What does he do?");
+    await user.click(screen.getByRole("button", { name: /send/i }));
+    expect(await screen.findByText(/couldn't reach the hosted model/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /send/i })).not.toBeDisabled();
   });
 });

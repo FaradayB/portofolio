@@ -2,6 +2,8 @@ import { useRef, useState } from "react";
 import {
   ChatEngine, ChatMessage, WebLLMEngine, isWebGpuAvailable,
 } from "./engine";
+import { RemoteEngine } from "./RemoteEngine";
+import { FallbackEngine } from "./FallbackEngine";
 import { buildSystemPrompt } from "./systemPrompt";
 
 interface Props {
@@ -15,24 +17,15 @@ export default function ChatPanel({
   engine,
   webGpuAvailable = isWebGpuAvailable(),
 }: Props) {
-  const engineRef = useRef<ChatEngine>(engine ?? new WebLLMEngine());
+  const engineRef = useRef<ChatEngine>(
+    engine ?? new FallbackEngine(new RemoteEngine(), new WebLLMEngine()),
+  );
   const [status, setStatus] = useState<Status>("idle");
   const [progress, setProgress] = useState("");
   const [log, setLog] = useState<{ role: "user" | "assistant"; text: string }[]>([]);
   const [draft, setDraft] = useState("");
+  const [error, setError] = useState("");
 
-  if (!webGpuAvailable) {
-    return (
-      <div className="chat">
-        <p className="chat-fallback">
-          The CV Companion needs a WebGPU-capable browser (recent Chrome, Edge, or
-          Firefox) to run the on-device model. Meanwhile, browse the sections on the left.
-        </p>
-      </div>
-    );
-  }
-
-  // Opt-in: the ~350 MB model only downloads after the visitor clicks Start.
   function start() {
     setStatus("loading");
     engineRef.current
@@ -46,10 +39,13 @@ export default function ChatPanel({
       <div className="chat">
         <div className="chat-start">
           <p className="chat-fallback">
-            Ask the <strong>CV Companion</strong> anything about my experience. It runs a
-            small Qwen language model <strong>entirely in your browser</strong> — private,
-            no server. The first launch downloads the model (~350&nbsp;MB) once, then it's
-            cached.
+            Ask the <strong>CV Companion</strong> anything about my experience. It's
+            powered by a hosted Gemini model by default, with a small Qwen model that
+            runs <strong>entirely in your browser</strong> as an offline fallback.
+            {!webGpuAvailable && (
+              " Your browser doesn't support WebGPU, so the offline fallback won't be"
+              + " available if the hosted model is ever unreachable."
+            )}
           </p>
           <button className="chat-send" type="button" onClick={start}>
             Start Companion
@@ -74,13 +70,21 @@ export default function ChatPanel({
     ];
 
     let acc = "";
-    for await (const token of engineRef.current.ask(messages)) {
-      acc += token;
-      setLog((cur) => {
-        const next = [...cur];
-        next[next.length - 1] = { role: "assistant", text: acc };
-        return next;
-      });
+    try {
+      for await (const token of engineRef.current.ask(messages)) {
+        acc += token;
+        setLog((cur) => {
+          const next = [...cur];
+          next[next.length - 1] = { role: "assistant", text: acc };
+          return next;
+        });
+      }
+    } catch {
+      setError(
+        "Sorry, the Companion couldn't reach the hosted model and the offline "
+        + "fallback isn't available on this device.",
+      );
+      setLog((cur) => cur.slice(0, -1));
     }
     setStatus("ready");
   }
@@ -90,6 +94,7 @@ export default function ChatPanel({
       {status === "loading" && (
         <div className="chat-status">Loading Companion… {progress}</div>
       )}
+      {error && <div className="chat-status chat-error">{error}</div>}
       <div className="chat-log">
         {log.map((m, i) => (
           <div className="chat-msg card" key={i}>

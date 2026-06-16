@@ -1,9 +1,11 @@
 # Faraday Barr Fatahillah — Interactive CV
 
 A single-page CV styled as the *Trails of Cold Steel* **Camp Menu**, built with
-**React + TypeScript (Vite)**. It includes a **Companion** chatbot that runs a small
-**Qwen** model entirely in your browser via [WebLLM](https://github.com/mlc-ai/web-llm)
-(WebGPU) — **no backend, no API keys, no server costs.**
+**React + TypeScript (Vite)**. It includes a **Companion** chatbot that, by default,
+talks to a hosted **Gemini Flash** model through a small Vercel serverless function
+(works on every device, including iOS/mobile where WebGPU isn't available), and falls
+back to a small **Qwen** model running entirely in the browser via
+[WebLLM](https://github.com/mlc-ai/web-llm) if the hosted call ever fails.
 
 - 9 CV sections (Profile, Education, Experience, **Records/Projects**, Research, Leadership,
   Skills, Certifications, Contact) + a 10th **Companion** chat section.
@@ -109,14 +111,23 @@ docker run -p 8080:80 faraday-cv               # http://localhost:8080
 
 1. Push this repository to GitHub.
 2. In [Vercel](https://vercel.com/), **New Project → Import** your repo.
-3. Vercel auto-detects Vite and reads `vercel.json` (build command `npm run build`,
-   output `dist`). Just click **Deploy**.
+3. Vercel auto-detects Vite (static build from `vercel.json`) *and* the `/api/chat.ts`
+   serverless function. Just click **Deploy**.
+4. In the project's **Settings → Environment Variables**, add `GEMINI_API_KEY` (get a
+   free key from [Google AI Studio](https://aistudio.google.com/app/apikey); keep that
+   Gemini project on the **free tier with billing disabled** so there's no surprise cost).
 
-The build is fully static and the chatbot runs client-side, so it stays within Vercel's
-free tier. No environment variables or secrets are required.
+### Environment variables
 
-> Any static host works too (Netlify, Cloudflare Pages, GitHub Pages) — just serve the
-> `dist/` folder and add an SPA fallback to `index.html`.
+Copy `.env.example` to `.env.local` for local dev (`vercel dev` or `vite` will pick it
+up) and set the same `GEMINI_API_KEY` in the Vercel dashboard for production. The key is
+only read server-side in `/api/chat.ts` — it's never sent to the browser. If the hosted
+call fails for any reason (missing key, network issue, rate limit), the Companion
+silently falls back to the in-browser Qwen model where WebGPU is available.
+
+> Any static host works for the static build (Netlify, Cloudflare Pages, GitHub Pages),
+> but the hosted Companion specifically needs Vercel's serverless functions for
+> `/api/chat`. On other hosts, the Companion still works via the WebLLM fallback.
 
 ---
 
@@ -131,10 +142,14 @@ src/
   sections/          # the 8 content sections, each rendering cv.ts
   chat/
     engine.ts        # ChatEngine interface + WebLLMEngine (Qwen in-browser)
+    RemoteEngine.ts  # ChatEngine that calls /api/chat (hosted Gemini)
+    FallbackEngine.ts# tries RemoteEngine, falls back to WebLLMEngine on failure
     systemPrompt.ts  # turns cv.ts into the chatbot's system prompt
     ChatPanel.tsx    # the Companion chat UI
   App.tsx            # active-section state + layout
   styles/cv.css      # the full Camp Menu theme
+api/
+  chat.ts            # Vercel serverless function: calls Gemini, reuses systemPrompt.ts
 public/              # CV PDF (linked from the app)
 Dockerfile           # multi-stage: dev (HMR) + prod (nginx)
 docker-compose.yml   # dev service with hot reload
@@ -161,17 +176,19 @@ To change the chatbot model (e.g. to a larger Qwen), edit `MODEL_ID` in
 `prebuiltAppConfig` (e.g. `Qwen2.5-1.5B-Instruct-q4f16_1-MLC` for higher quality at the
 cost of a larger download).
 
-### Adding a real backend later
+### Swapping the hosted model or adding another backend
 
-The chatbot sits behind the `ChatEngine` interface in `src/chat/engine.ts`. To switch from
-the in-browser model to a server (a hosted API, or your own FastAPI/Ollama service), write
-a class implementing `ChatEngine` and pass it in:
+The chatbot sits behind the `ChatEngine` interface in `src/chat/engine.ts`. The default
+engine is `FallbackEngine(new RemoteEngine(), new WebLLMEngine())` — to point at a
+different hosted API (or your own FastAPI/Ollama service), write a class implementing
+`ChatEngine` and pass it in:
 
 ```tsx
 <ChatPanel engine={new MyRemoteEngine()} />
 ```
 
-Nothing else in the UI changes.
+Nothing else in the UI changes. To change the hosted model itself, edit `GEMINI_MODEL` in
+`api/chat.ts`.
 
 ---
 
