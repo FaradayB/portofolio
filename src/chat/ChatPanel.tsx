@@ -52,7 +52,7 @@ export default function ChatPanel({ engine }: Props) {
 
   return (
     <div className="chat">
-      <p className="chat-fallback">
+      <p className="chat-intro">
         Ask the <strong>CV Companion</strong> anything about my experience.
       </p>
       {error && <div className="chat-status chat-error">{error}</div>}

@@ -175,9 +175,7 @@ body {
 .chat-send:disabled { opacity: 0.5; cursor: default; }
 .chat-status { font-size: 10px; color: var(--gold-mid); margin-bottom: 8px; }
 .chat-error { color: #d86a5a; }
-.chat-fallback { font-size: 11px; color: #cfc8ad; line-height: 1.8; }
-.chat-start { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
-.chat-start .chat-send { padding: 10px 22px; font-size: 12px; letter-spacing: 1px; }
+.chat-intro { font-size: 11px; color: #cfc8ad; line-height: 1.8; }
 
 @media (max-width: 760px) {
   .body { grid-template-columns: 1fr; }
