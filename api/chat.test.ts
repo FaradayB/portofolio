@@ -70,6 +70,24 @@ describe("/api/chat handler", () => {
     expect(fetchMock).toHaveBeenCalledTimes(6); // 5 gemini + 1 groq
   });
 
+  it("advances when a model returns 200 with an empty reply", async () => {
+    let geminiCalls = 0;
+    const fetchMock = vi.fn(async (url: string) => {
+      if (url.includes("generativelanguage")) {
+        geminiCalls += 1;
+        return geminiOk("") as never; // 200 OK but empty text -> must advance
+      }
+      if (url.includes("api.groq.com")) return groqOk("from groq") as never;
+      throw new Error("unexpected url");
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    const res = makeRes();
+    await handler(makeReq("POST", { messages: userMessages }), res as never);
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual({ reply: "from groq" });
+    expect(geminiCalls).toBe(5); // all 5 Gemini entries returned empty and were skipped
+  });
+
   it("returns 502 when every model fails", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => fail429 as never));
     const res = makeRes();

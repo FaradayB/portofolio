@@ -118,8 +118,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const reply = await callModel(entry, history);
       res.status(200).json({ reply });
       return;
-    } catch {
+    } catch (err) {
       // advance to the next model in the chain
+      console.warn(`Model ${entry.provider}:${entry.model} failed, trying next:`, err);
     }
   }
 
