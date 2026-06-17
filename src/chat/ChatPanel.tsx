@@ -1,64 +1,26 @@
 import { useRef, useState } from "react";
-import {
-  ChatEngine, ChatMessage, WebLLMEngine, isWebGpuAvailable,
-} from "./engine";
+import { ChatEngine, ChatMessage } from "./engine";
 import { RemoteEngine } from "./RemoteEngine";
-import { FallbackEngine } from "./FallbackEngine";
 import { buildSystemPrompt } from "./systemPrompt";
 
 interface Props {
   engine?: ChatEngine;
-  webGpuAvailable?: boolean;
 }
 
-type Status = "idle" | "loading" | "ready" | "thinking";
+type Status = "ready" | "thinking";
 
-export default function ChatPanel({
-  engine,
-  webGpuAvailable = isWebGpuAvailable(),
-}: Props) {
-  const engineRef = useRef<ChatEngine>(
-    engine ?? new FallbackEngine(new RemoteEngine(), new WebLLMEngine()),
-  );
-  const [status, setStatus] = useState<Status>("idle");
-  const [progress, setProgress] = useState("");
+export default function ChatPanel({ engine }: Props) {
+  const engineRef = useRef<ChatEngine>(engine ?? new RemoteEngine());
+  const [status, setStatus] = useState<Status>("ready");
   const [log, setLog] = useState<{ role: "user" | "assistant"; text: string }[]>([]);
   const [draft, setDraft] = useState("");
   const [error, setError] = useState("");
-
-  function start() {
-    setStatus("loading");
-    engineRef.current
-      .init((p) => setProgress(`${p.text} ${Math.round(p.progress * 100)}%`))
-      .then(() => setStatus("ready"))
-      .catch((e) => { setProgress(String(e)); setStatus("idle"); });
-  }
-
-  if (status === "idle") {
-    return (
-      <div className="chat">
-        <div className="chat-start">
-          <p className="chat-fallback">
-            Ask the <strong>CV Companion</strong> anything about my experience. It's
-            powered by a hosted Gemini model by default, with a small Qwen model that
-            runs <strong>entirely in your browser</strong> as an offline fallback.
-            {!webGpuAvailable && (
-              " Your browser doesn't support WebGPU, so the offline fallback won't be"
-              + " available if the hosted model is ever unreachable."
-            )}
-          </p>
-          <button className="chat-send" type="button" onClick={start}>
-            Start Companion
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   async function send(e: React.FormEvent) {
     e.preventDefault();
     const question = draft.trim();
     if (!question || status !== "ready") return;
+    setError("");
     setDraft("");
     const history = [...log, { role: "user" as const, text: question }];
     setLog([...history, { role: "assistant", text: "" }]);
@@ -81,8 +43,7 @@ export default function ChatPanel({
       }
     } catch {
       setError(
-        "Sorry, the Companion couldn't reach the hosted model and the offline "
-        + "fallback isn't available on this device.",
+        "Sorry, the Companion couldn't reach the model right now. Please try again in a moment.",
       );
       setLog((cur) => cur.slice(0, -1));
     }
@@ -91,9 +52,9 @@ export default function ChatPanel({
 
   return (
     <div className="chat">
-      {status === "loading" && (
-        <div className="chat-status">Loading Companion… {progress}</div>
-      )}
+      <p className="chat-fallback">
+        Ask the <strong>CV Companion</strong> anything about my experience.
+      </p>
       {error && <div className="chat-status chat-error">{error}</div>}
       <div className="chat-log">
         {log.map((m, i) => (
