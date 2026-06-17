@@ -2,13 +2,10 @@ import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import ChatPanel from "./ChatPanel";
-import type { ChatEngine, InitProgress } from "./engine";
+import type { ChatEngine } from "./engine";
 
 function mockEngine(reply: string): ChatEngine {
   return {
-    init: async (onProgress: (p: InitProgress) => void) => {
-      onProgress({ text: "loading", progress: 1 });
-    },
     ask: async function* () {
       for (const ch of reply.split(" ")) yield ch + " ";
     },
@@ -16,23 +13,16 @@ function mockEngine(reply: string): ChatEngine {
 }
 
 describe("ChatPanel", () => {
-  it("still offers to start (via the hosted engine) when WebGPU is unavailable", () => {
-    render(<ChatPanel engine={mockEngine("hi")} webGpuAvailable={false} />);
-    expect(screen.getByRole("button", { name: /start companion/i })).toBeInTheDocument();
-    expect(screen.getByText(/WebGPU/i)).toBeInTheDocument();
+  it("shows the input immediately with no Start gate", () => {
+    render(<ChatPanel engine={mockEngine("hi")} />);
+    expect(screen.getByPlaceholderText(/ask/i)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /start companion/i })).not.toBeInTheDocument();
   });
 
-  it("does not load the model until the visitor opts in", () => {
-    render(<ChatPanel engine={mockEngine("hi")} webGpuAvailable={true} />);
-    expect(screen.getByRole("button", { name: /start companion/i })).toBeInTheDocument();
-    expect(screen.queryByPlaceholderText(/ask/i)).not.toBeInTheDocument();
-  });
-
-  it("loads on opt-in then answers a question by streaming", async () => {
+  it("answers a question", async () => {
     const user = userEvent.setup();
-    render(<ChatPanel engine={mockEngine("Faraday is an AI Engineer")} webGpuAvailable={true} />);
-    await user.click(screen.getByRole("button", { name: /start companion/i }));
-    const input = await screen.findByPlaceholderText(/ask/i);
+    render(<ChatPanel engine={mockEngine("Faraday is an AI Engineer")} />);
+    const input = screen.getByPlaceholderText(/ask/i);
     await user.type(input, "What does he do?");
     await user.click(screen.getByRole("button", { name: /send/i }));
     expect(await screen.findByText(/Faraday is an AI Engineer/)).toBeInTheDocument();
@@ -40,20 +30,16 @@ describe("ChatPanel", () => {
 
   it("shows an error and stays usable when the engine fails", async () => {
     const failingEngine: ChatEngine = {
-      init: async (onProgress: (p: InitProgress) => void) => {
-        onProgress({ text: "loading", progress: 1 });
-      },
       ask: async function* () {
         throw new Error("network down");
       },
     };
     const user = userEvent.setup();
-    render(<ChatPanel engine={failingEngine} webGpuAvailable={true} />);
-    await user.click(screen.getByRole("button", { name: /start companion/i }));
-    const input = await screen.findByPlaceholderText(/ask/i);
+    render(<ChatPanel engine={failingEngine} />);
+    const input = screen.getByPlaceholderText(/ask/i);
     await user.type(input, "What does he do?");
     await user.click(screen.getByRole("button", { name: /send/i }));
-    expect(await screen.findByText(/couldn't reach the hosted model/i)).toBeInTheDocument();
+    expect(await screen.findByText(/couldn't reach the model/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /send/i })).not.toBeDisabled();
   });
 });
