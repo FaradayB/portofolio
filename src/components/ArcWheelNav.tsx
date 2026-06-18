@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { sections, SectionId } from "../data/sections";
 import Icon from "./Icon";
+import Celestial, { type CelestialName } from "./Celestial";
 
 /* -------------------------------------------------------------------------
    Endless arc-wheel navigation.
@@ -27,6 +28,12 @@ interface Props {
   onSelect: (id: SectionId) => void;
 }
 
+interface Traveler {
+  id: number;
+  icon: CelestialName;
+  dur: number;
+}
+
 function useMediaQuery(query: string): boolean {
   const get = () =>
     typeof window !== "undefined" && typeof window.matchMedia === "function"
@@ -44,6 +51,23 @@ function useMediaQuery(query: string): boolean {
   return match;
 }
 
+// current theme, by observing <html data-theme="…"> (set by ThemeToggle)
+function useTheme(): "dark" | "light" {
+  const get = () =>
+    typeof document !== "undefined" &&
+    document.documentElement.getAttribute("data-theme") === "light"
+      ? "light"
+      : "dark";
+  const [theme, setTheme] = useState<"dark" | "light">(get);
+  useEffect(() => {
+    if (typeof document === "undefined" || typeof MutationObserver === "undefined") return;
+    const obs = new MutationObserver(() => setTheme(get()));
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => obs.disconnect();
+  }, []);
+  return theme;
+}
+
 const indexOf = (id: SectionId) => sections.findIndex((s) => s.id === id);
 const nearestIndex = (offset: number) =>
   ((Math.round(offset / SPACING) % COUNT) + COUNT) % COUNT;
@@ -55,6 +79,7 @@ const alignFor = (i: number, near: number) => {
 export default function ArcWheelNav({ active, onSelect }: Props) {
   const reduced = useMediaQuery("(prefers-reduced-motion: reduce)");
   const mobile = useMediaQuery("(max-width: 860px)");
+  const theme = useTheme();
 
   const activeIndex = indexOf(active);
 
@@ -68,6 +93,8 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
 
   const [offset, setOffset] = useState(activeIndex * SPACING);
   const [dims, setDims] = useState({ w: 340, h: 640 });
+  // celestial icons drifting down the arc rail (spawned at random intervals)
+  const [travelers, setTravelers] = useState<Traveler[]>([]);
 
   // keep selection ref in sync if the view changes from elsewhere
   useEffect(() => { lastSelRef.current = activeIndex; }, [activeIndex]);
@@ -156,6 +183,29 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
   }, [reduced, mobile]);
 
   useEffect(() => () => { if (rafRef.current != null) cancelAnimationFrame(rafRef.current); }, []);
+
+  // spawn a celestial icon down the rail every few seconds (desktop, motion on)
+  useEffect(() => {
+    if (reduced || mobile) return;
+    const pair: readonly CelestialName[] =
+      theme === "light" ? ["sun", "saturn"] : ["star", "moon"];
+    let alive = true;
+    let timer = 0;
+    const spawn = () => {
+      if (!alive) return;
+      const icon = pair[Math.random() < 0.5 ? 0 : 1];
+      setTravelers((t: Traveler[]) => [
+        ...t,
+        { id: Date.now() + Math.random(), icon, dur: 6 + Math.random() * 3 },
+      ]);
+      timer = window.setTimeout(spawn, 4000 + Math.random() * 4000);
+    };
+    timer = window.setTimeout(spawn, 1200 + Math.random() * 2000);
+    return () => { alive = false; clearTimeout(timer); };
+  }, [reduced, mobile, theme]);
+
+  const removeTraveler = (id: number) =>
+    setTravelers((t: Traveler[]) => t.filter((x: Traveler) => x.id !== id));
 
   function onPointerDown(e: React.PointerEvent) {
     programmaticRef.current = false;
@@ -249,6 +299,18 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
   const centerX = dims.w + RADIUS - 150;
   const centerY = dims.h / 2;
 
+  // sample the same circle the pills ride into a path (top -> bottom) so the
+  // dashed rail and the celestial travelers share one geometry.
+  const span = Math.asin(Math.min(0.98, (dims.h / 2 + 80) / RADIUS)); // radians
+  const SAMPLES = 24;
+  let railPath = "";
+  for (let i = 0; i <= SAMPLES; i++) {
+    const a = Math.PI + span - 2 * span * (i / SAMPLES); // top (-y) -> bottom (+y)
+    const px = centerX + RADIUS * Math.cos(a);
+    const py = centerY + RADIUS * Math.sin(a);
+    railPath += (i === 0 ? "M" : "L") + px.toFixed(1) + " " + py.toFixed(1) + " ";
+  }
+
   return (
     <nav
       className="arcwheel"
@@ -266,6 +328,23 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
       >
+        <svg className="arcwheel-rail" width={dims.w} height={dims.h} aria-hidden="true">
+          <path d={railPath} />
+        </svg>
+        {travelers.map((t: Traveler) => (
+          <div
+            key={t.id}
+            className="arc-traveler"
+            style={{
+              ["offsetPath" as string]: `path('${railPath}')`,
+              animationDuration: `${t.dur}s`,
+            } as CSSProperties}
+            onAnimationEnd={() => removeTraveler(t.id)}
+            aria-hidden="true"
+          >
+            <Celestial name={t.icon} size={18} />
+          </div>
+        ))}
         {sections.map((s, i) => {
           let rel = (((i * SPACING - offset) % TOTAL) + TOTAL) % TOTAL;
           if (rel > HALF) rel -= TOTAL;
