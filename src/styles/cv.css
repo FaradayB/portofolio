@@ -189,7 +189,7 @@ a { color: inherit; }
 .layout {
   flex: 1;
   display: grid;
-  grid-template-columns: minmax(300px, 360px) 1fr;
+  grid-template-columns: minmax(210px, 250px) 1fr;
   gap: clamp(16px, 3vw, 48px);
   align-items: stretch;
 }
@@ -266,8 +266,8 @@ a { color: inherit; }
   height: var(--pill-h);
   display: flex;
   align-items: center;
-  gap: 11px;
-  padding: 0 18px;
+  gap: 9px;
+  padding: 0 14px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--border-strong);
   background: var(--surface);
@@ -275,7 +275,7 @@ a { color: inherit; }
   cursor: pointer;
   white-space: nowrap;
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: 12px;
   letter-spacing: 0.04em;
   will-change: transform, opacity;
   transition: background 0.25s var(--ease), border-color 0.25s var(--ease),

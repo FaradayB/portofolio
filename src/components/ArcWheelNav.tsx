@@ -12,8 +12,8 @@ import Icon from "./Icon";
 
 const SPACING = 7;                 // angular gap between items (degrees)
 const RADIUS = 520;                // circle radius (px)
-const PILL_W = 196;                // fixed pill size (kept in sync with CSS vars)
-const PILL_H = 46;
+const PILL_W = 150;                // fixed pill size (kept in sync with CSS vars)
+const PILL_H = 36;
 const COUNT = sections.length;
 const TOTAL = COUNT * SPACING;
 const HALF = TOTAL / 2;
@@ -215,7 +215,7 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
               aria-current={s.id === active ? "page" : undefined}
               onClick={() => onSelect(s.id)}
             >
-              <span className="arc-ico"><Icon name={s.icon} size={16} /></span>
+              <span className="arc-ico"><Icon name={s.icon} size={14} /></span>
               <span className="arc-label">{s.label}</span>
             </button>
           ))}
@@ -287,7 +287,7 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
               style={{ transform: `translate3d(${left}px, ${top}px, 0)`, opacity }}
               onClick={() => { if (!dragRef.current.moved) selectIndex(i); }}
             >
-              <span className="arc-ico"><Icon name={s.icon} size={16} /></span>
+              <span className="arc-ico"><Icon name={s.icon} size={14} /></span>
               <span className="arc-label">{s.label}</span>
             </button>
           );
