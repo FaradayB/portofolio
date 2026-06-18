@@ -190,7 +190,7 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
       const now = Date.now();
       if (now < lockUntil || Math.abs(e.deltaY) < 1) return;
       lockUntil = now + 600;
-      step(down ? -1 : 1);   // scroll down → next section (1 → 2 → 3 …)
+      step(down ? 1 : -1);   // scroll down → next section (1 → 2 → 3 …)
       content.scrollTop = 0; // start the new section at the top
     };
     window.addEventListener("wheel", onWheel, { passive: false });
