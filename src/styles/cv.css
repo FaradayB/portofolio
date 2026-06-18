@@ -65,7 +65,7 @@
 
 * { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; scroll-snap-type: y proximity; }
 
 body {
   margin: 0;
@@ -201,16 +201,15 @@ a { color: inherit; }
   flex-direction: column;
 }
 
-/* each section is a full-height panel in one continuous scroll */
+/* sections flow one after another, sized to their content, in one scroll */
 .view-section {
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: clamp(32px, 7vh, 80px) 0;
+  padding: clamp(28px, 5vh, 56px) 0;
   scroll-margin-top: 16px;
+  scroll-snap-align: start;
 }
-.view-section:first-child { min-height: calc(100vh - 120px); }
+.view-section:first-child { padding-top: 8px; }
 
 /* section enter animation */
 .section-head { margin-bottom: 28px; }
