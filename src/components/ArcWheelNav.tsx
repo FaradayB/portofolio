@@ -20,12 +20,15 @@ const TOTAL = COUNT * SPACING;
 const HALF = TOTAL / 2;
 // px of vertical drag that equals one item — makes a pill track the pointer 1:1
 const DEG_PER_PX = SPACING / (RADIUS * Math.sin((SPACING * Math.PI) / 180));
+// how far a wheel notch rotates the ring (deltaY * this). Positive = scroll
+// down advances to the next section. Flip the sign to reverse the direction.
+const WHEEL_STEP = 0.03;
 
 const hasRAF = typeof requestAnimationFrame === "function";
 
 interface Props {
   active: SectionId;
-  onSelect: (id: SectionId, smooth: boolean) => void;
+  onSelect: (id: SectionId) => void;
 }
 
 interface Traveler {
@@ -85,8 +88,10 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
 
   const stageRef = useRef<HTMLDivElement>(null);
   const offsetRef = useRef(activeIndex * SPACING);
+  const targetRef = useRef(activeIndex * SPACING);
   const rafRef = useRef<number | null>(null);
   const lastSelRef = useRef(activeIndex);
+  const programmaticRef = useRef(false); // true while easing to a clicked/arrowed item
   const dragRef = useRef({ active: false, moved: false, startY: 0, startOffset: 0 });
 
   const [offset, setOffset] = useState(activeIndex * SPACING);
@@ -94,14 +99,8 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
   // celestial icons drifting down the arc rail (spawned at random intervals)
   const [travelers, setTravelers] = useState<Traveler[]>([]);
 
-  // rotate the wheel to the active section as the page scrolls (scroll-spy),
-  // but skip while the user is dragging — the drag drives the wheel directly.
-  useEffect(() => {
-    lastSelRef.current = activeIndex;
-    if (dragRef.current.active) return;
-    animateTo(alignFor(activeIndex, offsetRef.current));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeIndex]);
+  // keep the selection ref in sync if the active view changes from elsewhere
+  useEffect(() => { lastSelRef.current = activeIndex; }, [activeIndex]);
 
   // measure the stage (drives the off-screen circle centre)
   useEffect(() => {
@@ -115,50 +114,79 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
     return () => ro.disconnect();
   }, [reduced, mobile]);
 
-  // drag scrubbing — jump the page instantly to the nearest section
-  function liveSelect(o: number, smooth = false) {
+  // live-select the centred section as the ring rotates (drag / wheel)
+  function liveSelect(o: number) {
     const idx = nearestIndex(o);
     if (idx !== lastSelRef.current) {
       lastSelRef.current = idx;
-      onSelect(sections[idx].id, smooth);
+      onSelect(sections[idx].id);
     }
   }
 
-  // smoothly rotate the wheel until `offset` reaches the target angle.
-  // always cancels any in-flight frame and reschedules, so rapid scroll-spy
-  // updates retarget cleanly and the wheel can never get stuck.
-  function animateTo(target: number) {
-    if (!hasRAF) {
-      offsetRef.current = target;
-      setOffset(target);
+  function tick() {
+    const o = offsetRef.current;
+    const t = targetRef.current;
+    const d = t - o;
+    if (Math.abs(d) < 0.06) {
+      offsetRef.current = t;
+      setOffset(t);
+      if (!programmaticRef.current) liveSelect(t);
+      const idx = nearestIndex(t);
+      const aligned = alignFor(idx, t);
+      if (Math.abs(aligned - t) > 0.1) {
+        targetRef.current = aligned;            // snap a pill to centre
+        rafRef.current = requestAnimationFrame(tick);
+      } else {
+        programmaticRef.current = false;
+        rafRef.current = null;
+      }
       return;
     }
-    const stepFrame = () => {
-      const cur = offsetRef.current;
-      const d = target - cur;
-      if (Math.abs(d) < 0.05) {
-        offsetRef.current = target;
-        setOffset(target);
-        rafRef.current = null;
-        return;
-      }
-      offsetRef.current = cur + d * 0.18;
-      setOffset(offsetRef.current);
-      rafRef.current = requestAnimationFrame(stepFrame);
-    };
-    if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
-    rafRef.current = requestAnimationFrame(stepFrame);
+    const next = o + d * 0.16;
+    offsetRef.current = next;
+    setOffset(next);
+    if (!programmaticRef.current) liveSelect(next);
+    rafRef.current = requestAnimationFrame(tick);
   }
 
-  // click / arrow — smooth-scroll to the section; scroll-spy rotates the wheel
+  function animate() {
+    if (!hasRAF) {
+      offsetRef.current = targetRef.current;
+      setOffset(targetRef.current);
+      liveSelect(targetRef.current);
+      return;
+    }
+    if (rafRef.current == null) rafRef.current = requestAnimationFrame(tick);
+  }
+
   function selectIndex(i: number) {
     lastSelRef.current = i;
-    onSelect(sections[i].id, true);
+    programmaticRef.current = true;
+    onSelect(sections[i].id);
+    targetRef.current = alignFor(i, offsetRef.current);
+    animate();
   }
 
   function step(delta: number) {
     selectIndex((lastSelRef.current + delta + COUNT) % COUNT);
   }
+
+  // wheel navigation: scrolling OUTSIDE the main content rotates the ring and
+  // changes the section; scrolling over the content lets it scroll normally.
+  useEffect(() => {
+    if (reduced || mobile) return;
+    const onWheel = (e: WheelEvent) => {
+      const t = e.target as Element | null;
+      if (t && typeof t.closest === "function" && t.closest(".stage")) return;
+      e.preventDefault();
+      programmaticRef.current = false;
+      targetRef.current += e.deltaY * WHEEL_STEP;
+      animate();
+    };
+    window.addEventListener("wheel", onWheel, { passive: false });
+    return () => window.removeEventListener("wheel", onWheel);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reduced, mobile]);
 
   useEffect(() => () => { if (rafRef.current != null) cancelAnimationFrame(rafRef.current); }, []);
 
@@ -186,6 +214,7 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
     setTravelers((t: Traveler[]) => t.filter((x: Traveler) => x.id !== id));
 
   function onPointerDown(e: React.PointerEvent) {
+    programmaticRef.current = false;
     dragRef.current = {
       active: true, moved: false,
       startY: e.clientY, startOffset: offsetRef.current,
@@ -199,18 +228,16 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
     if (Math.abs(dy) > 5) d.moved = true;
     const o = d.startOffset + dy * DEG_PER_PX;
     offsetRef.current = o;
+    targetRef.current = o;
     setOffset(o);
-    liveSelect(o); // scrub the page to the nearest section as we drag
+    liveSelect(o);
   }
   function onPointerUp(e: React.PointerEvent) {
     const d = dragRef.current;
     if (!d.active) return;
     d.active = false;
     (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
-    // settle the wheel onto the nearest section and align the page to it
-    const i = nearestIndex(offsetRef.current);
-    onSelect(sections[i].id, false);
-    animateTo(alignFor(i, offsetRef.current));
+    animate(); // settle / snap to nearest
   }
 
   function onKeyDown(e: React.KeyboardEvent) {
@@ -242,7 +269,7 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
               className={"arc-pill" + (s.id === active ? " is-active" : "")}
               aria-pressed={s.id === active}
               aria-current={s.id === active ? "page" : undefined}
-              onClick={() => onSelect(s.id, true)}
+              onClick={() => onSelect(s.id)}
             >
               <span className="arc-ico"><Icon name={s.icon} size={14} /></span>
               <span className="arc-label">{s.label}</span>
@@ -264,7 +291,7 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
             className={"tab" + (s.id === active ? " is-active" : "")}
             aria-pressed={s.id === active}
             aria-current={s.id === active ? "page" : undefined}
-            onClick={() => onSelect(s.id, true)}
+            onClick={() => onSelect(s.id)}
           >
             <Icon name={s.icon} size={18} />
             <span>{s.label}</span>
