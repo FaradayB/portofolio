@@ -175,17 +175,28 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
     if (reduced || mobile) return;
     let lockUntil = 0;
     const onWheel = (e: WheelEvent) => {
-      const t = e.target as Element | null;
-      const content = (t && typeof t.closest === "function"
-        ? t.closest(".stage")
+      const start = e.target as Element | null;
+      const content = (start && typeof start.closest === "function"
+        ? start.closest(".stage")
         : null) as HTMLElement | null;
       if (!content) return; // ignore scrolls outside the main view
-      const atTop = content.scrollTop <= 2;
-      const atBottom = content.scrollTop + content.clientHeight >= content.scrollHeight - 2;
       const down = e.deltaY > 0;
-      // still room to scroll in this direction → let the content scroll
-      if ((down && !atBottom) || (!down && !atTop)) return;
-      // content already at its edge → change section
+      // walk from the cursor up to the content; if any scrollable element
+      // (e.g. the chat log) can still scroll this way, let it — don't paginate
+      let el: HTMLElement | null = start as HTMLElement | null;
+      while (el) {
+        if (el.scrollHeight - el.clientHeight > 2) {
+          const oy = getComputedStyle(el).overflowY;
+          if (oy === "auto" || oy === "scroll") {
+            const atTop = el.scrollTop <= 2;
+            const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 2;
+            if ((down && !atBottom) || (!down && !atTop)) return;
+          }
+        }
+        if (el === content) break;
+        el = el.parentElement;
+      }
+      // everything is at its edge → change section
       e.preventDefault();
       const now = Date.now();
       if (now < lockUntil || Math.abs(e.deltaY) < 1) return;

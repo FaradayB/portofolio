@@ -38,7 +38,10 @@ export default function App() {
       <div className="layout">
         <ArcWheelNav active={active} onSelect={setActive} />
         <main className="stage">
-          <div className="view" key={active}>
+          <div
+            className={"view" + (active === "companion" ? " view--fixed" : "")}
+            key={active}
+          >
             {active !== "profile" && (
               <div className="section-head">
                 <div className="section-kicker">
