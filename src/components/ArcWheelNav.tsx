@@ -182,6 +182,37 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reduced, mobile]);
 
+  // content-driven paging: scroll the page normally, but stepping past the
+  // top/bottom edge advances to the prev/next section (wheel rotates in step).
+  useEffect(() => {
+    if (reduced || mobile) return;
+    let lockUntil = 0;
+    const onWheel = (e: WheelEvent) => {
+      // events over the wheel itself are handled by the stage listener above
+      const stage = stageRef.current;
+      if (stage && e.target instanceof Node && stage.contains(e.target)) return;
+      const now = Date.now();
+      if (now < lockUntil) { e.preventDefault(); return; }
+      const doc = document.documentElement;
+      const atTop = window.scrollY <= 2;
+      const atBottom = window.innerHeight + window.scrollY >= doc.scrollHeight - 2;
+      if (e.deltaY > 0 && atBottom) {
+        e.preventDefault();
+        lockUntil = now + 700;
+        step(1);
+        window.scrollTo(0, 0);
+      } else if (e.deltaY < 0 && atTop) {
+        e.preventDefault();
+        lockUntil = now + 700;
+        step(-1);
+        window.scrollTo(0, 0);
+      }
+    };
+    window.addEventListener("wheel", onWheel, { passive: false });
+    return () => window.removeEventListener("wheel", onWheel);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reduced, mobile]);
+
   useEffect(() => () => { if (rafRef.current != null) cancelAnimationFrame(rafRef.current); }, []);
 
   // spawn a celestial icon down the rail every few seconds (desktop, motion on)
