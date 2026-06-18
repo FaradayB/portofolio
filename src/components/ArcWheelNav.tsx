@@ -25,7 +25,7 @@ const hasRAF = typeof requestAnimationFrame === "function";
 
 interface Props {
   active: SectionId;
-  onSelect: (id: SectionId) => void;
+  onSelect: (id: SectionId, smooth: boolean) => void;
 }
 
 interface Traveler {
@@ -96,8 +96,16 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
   // celestial icons drifting down the arc rail (spawned at random intervals)
   const [travelers, setTravelers] = useState<Traveler[]>([]);
 
-  // keep selection ref in sync if the view changes from elsewhere
-  useEffect(() => { lastSelRef.current = activeIndex; }, [activeIndex]);
+  // rotate the wheel to the active section as the page scrolls (scroll-spy),
+  // but skip while the user is dragging — the drag drives the wheel directly.
+  useEffect(() => {
+    lastSelRef.current = activeIndex;
+    if (dragRef.current.active) return;
+    programmaticRef.current = true;
+    targetRef.current = alignFor(activeIndex, offsetRef.current);
+    animate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeIndex]);
 
   // measure the stage (drives the off-screen circle centre)
   useEffect(() => {
@@ -111,11 +119,12 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
     return () => ro.disconnect();
   }, [reduced, mobile]);
 
-  function liveSelect(o: number) {
+  // drag/settle scrubbing — jump the page instantly to the nearest section
+  function liveSelect(o: number, smooth = false) {
     const idx = nearestIndex(o);
     if (idx !== lastSelRef.current) {
       lastSelRef.current = idx;
-      onSelect(sections[idx].id);
+      onSelect(sections[idx].id, smooth);
     }
   }
 
@@ -155,63 +164,15 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
     if (rafRef.current == null) rafRef.current = requestAnimationFrame(tick);
   }
 
+  // click / arrow — smooth-scroll to the section; scroll-spy rotates the wheel
   function selectIndex(i: number) {
     lastSelRef.current = i;
-    programmaticRef.current = true;
-    onSelect(sections[i].id);
-    targetRef.current = alignFor(i, offsetRef.current);
-    animate();
+    onSelect(sections[i].id, true);
   }
 
   function step(delta: number) {
     selectIndex((lastSelRef.current + delta + COUNT) % COUNT);
   }
-
-  // native, non-passive wheel listener so we can preventDefault page scroll
-  useEffect(() => {
-    const el = stageRef.current;
-    if (!el || reduced || mobile) return;
-    const onWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      programmaticRef.current = false;
-      targetRef.current += e.deltaY * 0.08;
-      animate();
-    };
-    el.addEventListener("wheel", onWheel, { passive: false });
-    return () => el.removeEventListener("wheel", onWheel);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reduced, mobile]);
-
-  // content-driven paging: scroll the page normally, but stepping past the
-  // top/bottom edge advances to the prev/next section (wheel rotates in step).
-  useEffect(() => {
-    if (reduced || mobile) return;
-    let lockUntil = 0;
-    const onWheel = (e: WheelEvent) => {
-      // events over the wheel itself are handled by the stage listener above
-      const stage = stageRef.current;
-      if (stage && e.target instanceof Node && stage.contains(e.target)) return;
-      const now = Date.now();
-      if (now < lockUntil) { e.preventDefault(); return; }
-      const doc = document.documentElement;
-      const atTop = window.scrollY <= 2;
-      const atBottom = window.innerHeight + window.scrollY >= doc.scrollHeight - 2;
-      if (e.deltaY > 0 && atBottom) {
-        e.preventDefault();
-        lockUntil = now + 700;
-        step(1);
-        window.scrollTo(0, 0);
-      } else if (e.deltaY < 0 && atTop) {
-        e.preventDefault();
-        lockUntil = now + 700;
-        step(-1);
-        window.scrollTo(0, 0);
-      }
-    };
-    window.addEventListener("wheel", onWheel, { passive: false });
-    return () => window.removeEventListener("wheel", onWheel);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reduced, mobile]);
 
   useEffect(() => () => { if (rafRef.current != null) cancelAnimationFrame(rafRef.current); }, []);
 
@@ -294,7 +255,7 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
               className={"arc-pill" + (s.id === active ? " is-active" : "")}
               aria-pressed={s.id === active}
               aria-current={s.id === active ? "page" : undefined}
-              onClick={() => onSelect(s.id)}
+              onClick={() => onSelect(s.id, true)}
             >
               <span className="arc-ico"><Icon name={s.icon} size={14} /></span>
               <span className="arc-label">{s.label}</span>
@@ -316,7 +277,7 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
             className={"tab" + (s.id === active ? " is-active" : "")}
             aria-pressed={s.id === active}
             aria-current={s.id === active ? "page" : undefined}
-            onClick={() => onSelect(s.id)}
+            onClick={() => onSelect(s.id, true)}
           >
             <Icon name={s.icon} size={18} />
             <span>{s.label}</span>

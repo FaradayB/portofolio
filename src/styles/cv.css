@@ -201,6 +201,17 @@ a { color: inherit; }
   flex-direction: column;
 }
 
+/* each section is a full-height panel in one continuous scroll */
+.view-section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(32px, 7vh, 80px) 0;
+  scroll-margin-top: 16px;
+}
+.view-section:first-child { min-height: calc(100vh - 120px); }
+
 /* section enter animation */
 .section-head { margin-bottom: 28px; }
 .section-kicker {
@@ -571,9 +582,15 @@ a { color: inherit; }
    Footer
    ========================================================================= */
 .footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
   display: flex; justify-content: space-between; align-items: center; gap: 16px;
   padding: 20px 0;
   border-top: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+          backdrop-filter: blur(10px);
   font-family: var(--font-mono);
   font-size: var(--step-00);
   color: var(--muted);
