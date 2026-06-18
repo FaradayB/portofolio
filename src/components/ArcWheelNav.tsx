@@ -168,30 +168,29 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
     selectIndex((lastSelRef.current + delta + COUNT) % COUNT);
   }
 
-  // wheel navigation: let the main content scroll until it reaches its top or
-  // bottom edge; a further scroll there (or anywhere outside the content) moves
-  // to the prev/next section. One section per notch, briefly locked after.
+  // wheel navigation: only the main content drives section changes. Let it
+  // scroll until it reaches its top or bottom edge; a further scroll there
+  // moves to the prev/next section. One section per notch, briefly locked.
   useEffect(() => {
     if (reduced || mobile) return;
     let lockUntil = 0;
     const onWheel = (e: WheelEvent) => {
       const t = e.target as Element | null;
       const overContent = !!(t && typeof t.closest === "function" && t.closest(".stage"));
-      if (overContent) {
-        const sc = document.scrollingElement || document.documentElement;
-        const atTop = window.scrollY <= 2;
-        const atBottom = window.innerHeight + window.scrollY >= sc.scrollHeight - 2;
-        const down = e.deltaY > 0;
-        // still room to scroll in this direction → let the content scroll
-        if ((down && !atBottom) || (!down && !atTop)) return;
-      }
-      // outside the content, or content already at its edge → change section
+      if (!overContent) return; // ignore scrolls outside the main view
+      const sc = document.scrollingElement || document.documentElement;
+      const atTop = window.scrollY <= 2;
+      const atBottom = window.innerHeight + window.scrollY >= sc.scrollHeight - 2;
+      const down = e.deltaY > 0;
+      // still room to scroll in this direction → let the content scroll
+      if ((down && !atBottom) || (!down && !atTop)) return;
+      // content already at its edge → change section
       e.preventDefault();
       const now = Date.now();
       if (now < lockUntil || Math.abs(e.deltaY) < 1) return;
       lockUntil = now + 600;
-      step(e.deltaY > 0 ? 1 : -1); // scroll down → next section
-      window.scrollTo(0, 0);       // start the new section at the top
+      step(down ? 1 : -1);   // scroll down → next section
+      window.scrollTo(0, 0); // start the new section at the top
     };
     window.addEventListener("wheel", onWheel, { passive: false });
     return () => window.removeEventListener("wheel", onWheel);
