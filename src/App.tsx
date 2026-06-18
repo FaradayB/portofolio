@@ -32,6 +32,17 @@ export default function App() {
   const index = sections.findIndex((s) => s.id === active);
   const meta = sections[index];
 
+  // track which way we moved so the new section slides in from that direction
+  // (cyclic-aware: a wrap takes the short way, matching the wheel's rotation)
+  const [prevIndex, setPrevIndex] = useState(index);
+  const [dir, setDir] = useState<"down" | "up">("down");
+  if (index !== prevIndex) {
+    let d = index - prevIndex;
+    if (Math.abs(d) > sections.length / 2) d += d > 0 ? -sections.length : sections.length;
+    setDir(d > 0 ? "down" : "up");
+    setPrevIndex(index);
+  }
+
   return (
     <div className="shell">
       <Header />
@@ -40,6 +51,7 @@ export default function App() {
         <main className="stage">
           <div
             className={"view" + (active === "companion" ? " view--fixed" : "")}
+            data-dir={dir}
             key={active}
           >
             {active !== "profile" && (
