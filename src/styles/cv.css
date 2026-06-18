@@ -272,7 +272,7 @@ a { color: inherit; }
 }
 .arcwheel-rail path {
   fill: none;
-  stroke: var(--border-strong);
+  stroke: var(--faint);
   stroke-width: 1.5;
   stroke-dasharray: 3 9;
   opacity: 0.7;
