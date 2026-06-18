@@ -20,9 +20,6 @@ const TOTAL = COUNT * SPACING;
 const HALF = TOTAL / 2;
 // px of vertical drag that equals one item — makes a pill track the pointer 1:1
 const DEG_PER_PX = SPACING / (RADIUS * Math.sin((SPACING * Math.PI) / 180));
-// how far a wheel notch rotates the ring (deltaY * this). Positive = scroll
-// down advances to the next section. Flip the sign to reverse the direction.
-const WHEEL_STEP = 0.03;
 
 const hasRAF = typeof requestAnimationFrame === "function";
 
@@ -171,17 +168,30 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
     selectIndex((lastSelRef.current + delta + COUNT) % COUNT);
   }
 
-  // wheel navigation: scrolling OUTSIDE the main content rotates the ring and
-  // changes the section; scrolling over the content lets it scroll normally.
+  // wheel navigation: let the main content scroll until it reaches its top or
+  // bottom edge; a further scroll there (or anywhere outside the content) moves
+  // to the prev/next section. One section per notch, briefly locked after.
   useEffect(() => {
     if (reduced || mobile) return;
+    let lockUntil = 0;
     const onWheel = (e: WheelEvent) => {
       const t = e.target as Element | null;
-      if (t && typeof t.closest === "function" && t.closest(".stage")) return;
+      const overContent = !!(t && typeof t.closest === "function" && t.closest(".stage"));
+      if (overContent) {
+        const sc = document.scrollingElement || document.documentElement;
+        const atTop = window.scrollY <= 2;
+        const atBottom = window.innerHeight + window.scrollY >= sc.scrollHeight - 2;
+        const down = e.deltaY > 0;
+        // still room to scroll in this direction → let the content scroll
+        if ((down && !atBottom) || (!down && !atTop)) return;
+      }
+      // outside the content, or content already at its edge → change section
       e.preventDefault();
-      programmaticRef.current = false;
-      targetRef.current += e.deltaY * WHEEL_STEP;
-      animate();
+      const now = Date.now();
+      if (now < lockUntil || Math.abs(e.deltaY) < 1) return;
+      lockUntil = now + 600;
+      step(e.deltaY > 0 ? 1 : -1); // scroll down → next section
+      window.scrollTo(0, 0);       // start the new section at the top
     };
     window.addEventListener("wheel", onWheel, { passive: false });
     return () => window.removeEventListener("wheel", onWheel);
