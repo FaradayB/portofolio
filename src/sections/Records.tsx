@@ -1,10 +1,11 @@
 import { cv } from "../data/cv";
+import Icon from "../components/Icon";
 
 export default function Records() {
   return (
-    <>
+    <div className="cards">
       {cv.projects.map((p) => (
-        <div className="card project" key={p.title}>
+        <article className="card project" key={p.title}>
           <div className="card-title">{p.title}</div>
           <div className="tech-row">
             {p.tech.map((t) => (
@@ -15,15 +16,15 @@ export default function Records() {
           {(p.repo || p.demo) && (
             <div className="project-links">
               {p.repo && (
-                <a href={p.repo} target="_blank" rel="noopener">Repo ↗</a>
+                <a href={p.repo} target="_blank" rel="noopener">Repo <Icon name="arrow" size={14} /></a>
               )}
               {p.demo && (
-                <a href={p.demo} target="_blank" rel="noopener">Demo ↗</a>
+                <a href={p.demo} target="_blank" rel="noopener">Demo <Icon name="arrow" size={14} /></a>
               )}
             </div>
           )}
-        </div>
+        </article>
       ))}
-    </>
+    </div>
   );
 }

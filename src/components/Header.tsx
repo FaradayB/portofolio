@@ -1,29 +1,33 @@
 import { cv } from "../data/cv";
+import Icon from "./Icon";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Header() {
+  const initials = cv.name.split(" ").map((w) => w[0]).slice(0, 2).join("");
   return (
-    <header className="header">
-      <div className="header-left">
-        <div className="crest">
-          <i className="ti ti-chess-knight" />
-          {/* Drop a square photo at public/profile.jpg to replace the crest icon.
-              If the file is missing the image hides itself and the icon shows. */}
+    <header className="topbar">
+      <div className="brand">
+        <div className="brand-mark">
+          {initials}
+          {/* Drop a square photo at public/profile.jpg to replace the initials.
+              If the file is missing the image hides itself and initials show. */}
           <img
-            className="crest-photo"
             src="/profile.jpg"
             alt={cv.name}
             onError={(e) => { e.currentTarget.style.display = "none"; }}
           />
         </div>
         <div>
-          <div className="header-name">{cv.name.toUpperCase()}</div>
-          <div className="header-rule" />
-          <div className="header-role">{cv.role.toUpperCase()}</div>
+          <div className="brand-name">{cv.name}</div>
+          <div className="brand-role">{cv.role}</div>
         </div>
       </div>
-      <div className="header-hints">
-        <div><i className="ti ti-mail" />: {cv.emailHint}</div>
-        <div><i className="ti ti-brand-github" />: {cv.githubHint}</div>
+      <div className="topbar-right">
+        <div className="topbar-hints">
+          <a href={`mailto:${cv.emailHint}`}>{cv.emailHint}</a>
+          <a href={`https://${cv.githubHint}`} target="_blank" rel="noopener">{cv.githubHint}</a>
+        </div>
+        <ThemeToggle />
       </div>
     </header>
   );

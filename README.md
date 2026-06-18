@@ -1,16 +1,23 @@
-# Faraday Barr Fatahillah — Interactive CV
+# Faraday Barr Fatahillah — Portfolio
 
-A single-page CV styled as the *Trails of Cold Steel* **Camp Menu**, built with
-**React + TypeScript (Vite)**. It includes a **Companion** chatbot that talks to a hosted
-chain of free models — **Gemini Flash** variants first, then **Groq (Llama 3.3 70B)** as a
-fallback — through the `/api/chat` Vercel serverless function. It works on every device
-(nothing runs in the browser, no model download) and loads instantly.
+A single-page portfolio built with **React + TypeScript (Vite)**, organised around a
+signature **endless arc-wheel** navigation: the nav items ride the edge of a large,
+invisible off-screen circle, and scrolling or dragging rotates them around it forever
+(items that pass off one end wrap back in from the other). The aesthetic is a
+near-monochrome system with a single bold lime accent, in both **dark and light** themes.
+It includes a **Companion** chatbot that talks to a hosted chain of free models —
+**Gemini Flash** variants first, then **Groq (Llama 3.3 70B)** as a fallback — through the
+`/api/chat` Vercel serverless function. It works on every device and loads instantly.
 
-- 9 CV sections (Profile, Education, Experience, **Records/Projects**, Research, Leadership,
+- 9 sections (Profile, Education, Experience, **Records/Projects**, Research, Leadership,
   Skills, Certifications, Contact) + a 10th **Companion** chat section.
+- **Arc-wheel nav** with full keyboard support (arrow keys rotate + select), `aria-current`,
+  focus rings and an sr-only summary. It respects `prefers-reduced-motion` (falls back to a
+  plain vertical list) and collapses to a **bottom tab bar** on mobile.
 - All resume content lives in one typed file: `src/data/cv.ts`. Edit it in one place and
   both the rendered sections **and** the chatbot's knowledge update.
-- Designed to deploy free on **Vercel** (or any static host).
+- No UI dependencies: icons are inline SVG (`src/components/Icon.tsx`), theming is plain
+  CSS variables. Designed to deploy free on **Vercel**.
 
 ---
 
@@ -95,16 +102,16 @@ and falls back to Groq last; if all of them fail it returns an error.
 src/
   data/
     cv.ts            # SINGLE SOURCE OF TRUTH — all resume content (edit here)
-    sections.ts      # the 9 sidebar entries (label, icon, footer hint)
-  components/         # Header, Sidebar, Footer, SkillBar, Card
-  sections/          # the 8 content sections, each rendering cv.ts
+    sections.ts      # the 10 nav entries (label, icon, footer hint)
+  components/         # ArcWheelNav, Header, Footer, ThemeToggle, Icon, SkillBar, Card
+  sections/          # the content sections, each rendering cv.ts
   chat/
     engine.ts        # ChatEngine interface
     RemoteEngine.ts  # ChatEngine that calls /api/chat (hosted model chain)
     systemPrompt.ts  # turns cv.ts into the chatbot's system prompt
     ChatPanel.tsx    # the Companion chat UI
   App.tsx            # active-section state + layout
-  styles/cv.css      # the full Camp Menu theme
+  styles/cv.css      # design system: tokens, dark/light themes, arc-wheel + components
 api/
   chat.ts            # Vercel serverless function: walks the Gemini→Groq model chain, reuses systemPrompt.ts
 public/              # CV PDF (linked from the app)
@@ -120,8 +127,8 @@ skills, etc. Both the on-screen sections and the Companion chatbot's answers upd
 this one file. Add `repo`/`demo` URLs to any project in `cv.projects` to show `[Repo ↗]` /
 `[Demo ↗]` links on its card.
 
-**Profile photo:** drop a square image at **`public/profile.jpg`** to replace the crest
-icon in the header. If the file is absent, the crest icon shows instead.
+**Profile photo:** drop a square image at **`public/profile.jpg`** to replace the initials
+mark in the header. If the file is absent, the initials show instead.
 
 **Download CV:** the Profile section links `public/CV-FARADAY BARR FATAHILLAH-1.pdf` via
 `cv.resumePdf` — swap that file (or the path) to change it.

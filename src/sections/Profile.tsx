@@ -1,10 +1,11 @@
 import { cv } from "../data/cv";
+import Icon from "../components/Icon";
 
 export default function Profile() {
   return (
     <div className="profile">
-      <div className="diamond">◆</div>
-      <div className="profile-role">{cv.role}</div>
+      <div className="section-kicker">Available for AI roles</div>
+      <h1 className="profile-role">{cv.role}</h1>
       <p className="profile-bio">{cv.bio}</p>
       <div className="stat-row">
         {cv.stats.map((s) => (
@@ -12,7 +13,7 @@ export default function Profile() {
         ))}
       </div>
       <a className="btn-download" href={cv.resumePdf} target="_blank" rel="noopener">
-        <i className="ti ti-download" /> Download CV
+        Download CV <Icon name="download" size={16} />
       </a>
     </div>
   );
