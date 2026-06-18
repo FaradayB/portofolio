@@ -176,11 +176,12 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
     let lockUntil = 0;
     const onWheel = (e: WheelEvent) => {
       const t = e.target as Element | null;
-      const overContent = !!(t && typeof t.closest === "function" && t.closest(".stage"));
-      if (!overContent) return; // ignore scrolls outside the main view
-      const sc = document.scrollingElement || document.documentElement;
-      const atTop = window.scrollY <= 2;
-      const atBottom = window.innerHeight + window.scrollY >= sc.scrollHeight - 2;
+      const content = (t && typeof t.closest === "function"
+        ? t.closest(".stage")
+        : null) as HTMLElement | null;
+      if (!content) return; // ignore scrolls outside the main view
+      const atTop = content.scrollTop <= 2;
+      const atBottom = content.scrollTop + content.clientHeight >= content.scrollHeight - 2;
       const down = e.deltaY > 0;
       // still room to scroll in this direction → let the content scroll
       if ((down && !atBottom) || (!down && !atTop)) return;
@@ -190,7 +191,7 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
       if (now < lockUntil || Math.abs(e.deltaY) < 1) return;
       lockUntil = now + 600;
       step(down ? 1 : -1);   // scroll down → next section
-      window.scrollTo(0, 0); // start the new section at the top
+      content.scrollTop = 0; // start the new section at the top
     };
     window.addEventListener("wheel", onWheel, { passive: false });
     return () => window.removeEventListener("wheel", onWheel);

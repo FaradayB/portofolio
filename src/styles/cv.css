@@ -65,10 +65,12 @@
 
 * { box-sizing: border-box; }
 
+html, body, #root { height: 100%; }
 html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
+  overflow: hidden;            /* fixed page — only the content area scrolls */
   font-family: var(--font-body);
   font-size: var(--step-0);
   line-height: 1.6;
@@ -116,7 +118,8 @@ a { color: inherit; }
   max-width: 1800px;
   margin: 0 auto;
   padding: 0 clamp(18px, 4vw, 48px);
-  min-height: 100vh;
+  height: 100%;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -188,6 +191,7 @@ a { color: inherit; }
    ========================================================================= */
 .layout {
   flex: 1;
+  min-height: 0;
   display: grid;
   grid-template-columns: minmax(210px, 250px) 1fr;
   gap: clamp(16px, 3vw, 48px);
@@ -196,10 +200,14 @@ a { color: inherit; }
 
 .stage {
   min-width: 0;
+  min-height: 0;
   padding: clamp(28px, 5vh, 64px) 0 64px;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;            /* tall sections scroll here, not the page */
+  scrollbar-width: none;       /* hide the scrollbar (Firefox) */
 }
+.stage::-webkit-scrollbar { display: none; }  /* hide the scrollbar (WebKit) */
 
 /* section enter animation */
 .section-head { margin-bottom: 28px; }
@@ -232,11 +240,10 @@ a { color: inherit; }
    Arc-wheel navigation
    ========================================================================= */
 .arcwheel {
-  position: sticky;
-  top: 0;
-  align-self: start;
-  height: calc(100vh - 88px);
-  min-height: 520px;
+  position: relative;
+  align-self: stretch;
+  height: 100%;
+  min-height: 0;
   overflow: hidden;
   -webkit-user-select: none;
           user-select: none;
