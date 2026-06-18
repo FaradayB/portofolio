@@ -11,7 +11,7 @@ import Icon from "./Icon";
    ------------------------------------------------------------------------- */
 
 const SPACING = 10;                 // angular gap between items (degrees)
-const RADIUS = 900;                // circle radius (px)
+const RADIUS = 1080;                // circle radius (px)
 const PILL_W = 150;                // fixed pill size (kept in sync with CSS vars)
 const PILL_H = 36;
 const COUNT = sections.length;
