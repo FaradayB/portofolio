@@ -10,7 +10,7 @@ import Icon from "./Icon";
    Wheel / drag rotate `offset`; items recycle forever with no seam.
    ------------------------------------------------------------------------- */
 
-const SPACING = 20;                 // angular gap between items (degrees)
+const SPACING = 14;                 // angular gap between items (degrees)
 const RADIUS = 520;                // circle radius (px)
 const PILL_W = 150;                // fixed pill size (kept in sync with CSS vars)
 const PILL_H = 36;
