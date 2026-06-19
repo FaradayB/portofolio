@@ -201,7 +201,7 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
       const now = Date.now();
       if (now < lockUntil || Math.abs(e.deltaY) < 1) return;
       lockUntil = now + 600;
-      step(down ? -1 : 1);   // scroll down → previous section (reversed wheel direction)
+      step(down ? 1 : -1);   // scroll down → next section (profile → education → …)
       content.scrollTop = 0; // start the new section at the top
     };
     window.addEventListener("wheel", onWheel, { passive: false });

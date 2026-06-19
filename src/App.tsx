@@ -39,7 +39,7 @@ export default function App() {
   if (index !== prevIndex) {
     let d = index - prevIndex;
     if (Math.abs(d) > sections.length / 2) d += d > 0 ? -sections.length : sections.length;
-    setDir(d > 0 ? "down" : "up");
+    setDir(d > 0 ? "up" : "down");
     setPrevIndex(index);
   }
 
