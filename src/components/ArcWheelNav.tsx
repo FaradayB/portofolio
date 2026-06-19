@@ -340,7 +340,7 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
 
   return (
     <nav
-      className="arcwheel"
+      className="arcwheel hud-scan"
       aria-label="Sections"
       onKeyDown={onKeyDown}
       style={{ "--pill-w": `${PILL_W}px`, "--pill-h": `${PILL_H}px` } as CSSProperties}

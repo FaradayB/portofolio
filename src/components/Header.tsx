@@ -1,6 +1,7 @@
 import { cv } from "../data/cv";
 import Icon from "./Icon";
 import ThemeToggle from "./ThemeToggle";
+import EnergyPicker from "./EnergyPicker";
 
 export default function Header() {
   const initials = cv.name.split(" ").map((w) => w[0]).slice(0, 2).join("");
@@ -27,6 +28,7 @@ export default function Header() {
           <a href={`mailto:${cv.emailHint}`}>{cv.emailHint}</a>
           <a href={`https://${cv.githubHint}`} target="_blank" rel="noopener">{cv.githubHint}</a>
         </div>
+        <EnergyPicker />
         <ThemeToggle />
       </div>
     </header>

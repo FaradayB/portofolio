@@ -40,9 +40,9 @@
   --faint: #65655f;
   --border: #242427;
   --border-strong: #34343a;
-  --accent: #4d7cff;
-  --accent-soft: rgba(77, 124, 255, 0.14);
-  --on-accent: #ffffff;
+  --accent: #e7c873;
+  --accent-soft: rgba(231, 200, 115, 0.18);
+  --on-accent: #1a1405;
   --shadow: 0 18px 50px -28px rgba(0, 0, 0, 0.85);
 }
 
@@ -58,11 +58,25 @@
   --faint: #9a988d;
   --border: #e0ddd3;
   --border-strong: #cbc8bb;
-  --accent: #3a5fe0;
-  --accent-soft: rgba(58, 95, 224, 0.16);
+  --accent: #9a7b1e;
+  --accent-soft: rgba(154, 123, 30, 0.16);
   --on-accent: #ffffff;
   --shadow: 0 18px 50px -30px rgba(40, 38, 28, 0.45);
 }
+
+/* ---------- energy colors — override accent tokens (default = Orokin gold) ----------
+   Dark variants first, then higher-specificity light variants. */
+:root[data-energy="orokin"] { --accent: #e7c873; --accent-soft: rgba(231, 200, 115, 0.18); --on-accent: #1a1405; }
+:root[data-energy="arc"]    { --accent: #3ba9ff; --accent-soft: rgba(59, 169, 255, 0.15);  --on-accent: #04121f; }
+:root[data-energy="solar"]  { --accent: #ff9d3b; --accent-soft: rgba(255, 157, 59, 0.16);  --on-accent: #1a0e00; }
+:root[data-energy="void"]   { --accent: #9a6bff; --accent-soft: rgba(154, 107, 255, 0.16); --on-accent: #ffffff; }
+:root[data-energy="stasis"] { --accent: #62d0ff; --accent-soft: rgba(98, 208, 255, 0.16);  --on-accent: #04121f; }
+
+:root[data-theme="light"][data-energy="orokin"] { --accent: #9a7b1e; --accent-soft: rgba(154, 123, 30, 0.16); --on-accent: #ffffff; }
+:root[data-theme="light"][data-energy="arc"]    { --accent: #1f6fd0; --accent-soft: rgba(31, 111, 208, 0.16); --on-accent: #ffffff; }
+:root[data-theme="light"][data-energy="solar"]  { --accent: #c2660d; --accent-soft: rgba(194, 102, 13, 0.16); --on-accent: #ffffff; }
+:root[data-theme="light"][data-energy="void"]   { --accent: #6b3fd0; --accent-soft: rgba(107, 63, 208, 0.16); --on-accent: #ffffff; }
+:root[data-theme="light"][data-energy="stasis"] { --accent: #1487b8; --accent-soft: rgba(20, 135, 184, 0.16); --on-accent: #ffffff; }
 
 * { box-sizing: border-box; }
 
@@ -242,18 +256,6 @@ a { color: inherit; }
 
 /* section enter animation */
 .section-head { margin-bottom: 28px; position: relative; }
-.section-head::before {
-  content: "";
-  position: absolute;
-  top: -10px;
-  left: 0;
-  width: 14px;
-  height: 14px;
-  border-top: 1px solid var(--accent);
-  border-left: 1px solid var(--accent);
-  opacity: 0.5;
-  pointer-events: none;
-}
 .section-kicker {
   font-family: var(--font-mono);
   font-size: var(--step-00);
@@ -347,10 +349,11 @@ a { color: inherit; }
 }
 .arcwheel-rail path {
   fill: none;
-  stroke: var(--faint);
+  stroke: var(--accent);
   stroke-width: 1.5;
   stroke-dasharray: 3 9;
-  opacity: 0.7;
+  opacity: 0.5;
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--accent) 60%, transparent));
   animation: railFlow 1.1s linear infinite;
 }
 @keyframes railFlow {
@@ -415,7 +418,26 @@ a { color: inherit; }
   transition: background 0.25s var(--ease), border-color 0.25s var(--ease),
               color 0.25s var(--ease);
 }
-.arc-pill .arc-ico { flex: none; display: grid; place-items: center; color: var(--muted); transition: color 0.25s; }
+.arc-pill .arc-ico {
+  position: relative;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  transition: color 0.25s;
+}
+/* Destiny-style rhombus node frame behind the icon */
+.arc-pill .arc-ico::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border: 1px solid var(--border-strong);
+  transform: rotate(45deg);
+  transition: border-color 0.25s;
+  pointer-events: none;
+}
 .arc-pill .arc-label { overflow: hidden; text-overflow: ellipsis; }
 .arc-pill:hover { border-color: var(--accent); }
 .arc-pill.is-active {
@@ -427,6 +449,20 @@ a { color: inherit; }
     0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent);
 }
 .arc-pill.is-active .arc-ico { color: var(--on-accent); }
+.arc-pill.is-active .arc-ico::before { border-color: var(--on-accent); }
+/* HUD corner brackets framing the active "you are here" node */
+.arc-pill.is-active::before,
+.arc-pill.is-active::after {
+  content: "";
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--on-accent);
+  opacity: 0.85;
+  pointer-events: none;
+}
+.arc-pill.is-active::before { top: 5px; left: 5px; border-right: 0; border-bottom: 0; }
+.arc-pill.is-active::after { bottom: 5px; right: 5px; border-left: 0; border-top: 0; }
 
 /* =========================================================================
    Reduced-motion / fallback vertical list
@@ -550,6 +586,12 @@ a { color: inherit; }
   transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
 }
 .btn-download:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+/* keep the energy rim alive on hover (merge it with the lift shadow) */
+.btn-download.hud-rim:hover {
+  box-shadow: var(--shadow),
+    0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent),
+    0 0 24px -6px var(--accent);
+}
 
 /* Projects */
 .project .tech-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 14px; }
@@ -682,4 +724,89 @@ a { color: inherit; }
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
+}
+
+/* =========================================================================
+   HUD frame kit — corner brackets, scanlines, energy rim (chrome only)
+   ========================================================================= */
+/* diagonal corner brackets (top-left + bottom-right) that draw in */
+.hud-frame { position: relative; }
+.hud-frame::before,
+.hud-frame::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--accent);
+  opacity: 0.55;
+  pointer-events: none;
+  animation: hudDraw 0.5s var(--ease-weighted) both;
+}
+.hud-frame::before { top: -8px; left: -8px; border-right: 0; border-bottom: 0; }
+.hud-frame::after { bottom: -8px; right: -8px; border-left: 0; border-top: 0; }
+@keyframes hudDraw {
+  from { opacity: 0; transform: scale(0.6); }
+  to   { opacity: 0.55; transform: none; }
+}
+
+/* faint scanlines, painted BEHIND content via ::before */
+.hud-scan { position: relative; }
+.hud-scan::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;            /* sit behind the pills, not over them */
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--accent) 10%, transparent) 0 1px,
+    transparent 1px 5px
+  );
+  opacity: 0.4;
+  animation: hudScan 9s linear infinite;
+}
+@keyframes hudScan {
+  from { background-position: 0 0; }
+  to   { background-position: 0 25px; }
+}
+
+/* energy rim — STATIC glow base (survives reduced-motion) + gentle pulse */
+.hud-rim {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent),
+    0 0 16px -8px var(--accent);
+  animation: hudRim 3.4s var(--ease) infinite alternate;
+}
+@keyframes hudRim {
+  from { box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent), 0 0 14px -9px var(--accent); }
+  to   { box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent), 0 0 24px -6px var(--accent); }
+}
+
+/* =========================================================================
+   Energy-color picker (topbar)
+   ========================================================================= */
+.energy-picker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 4px;
+}
+.energy-swatch {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  background: var(--swatch);
+  cursor: pointer;
+  transition: transform 0.18s var(--ease), box-shadow 0.18s var(--ease);
+}
+.energy-swatch:hover { transform: translateY(-2px); }
+.energy-swatch.is-active {
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 3px var(--swatch), 0 0 8px -1px var(--swatch);
+}
+.energy-swatch:focus-visible { outline: 2px solid var(--swatch); outline-offset: 2px; }
+
+@media (max-width: 540px) {
+  .energy-picker { display: none; }   /* keep the small-screen topbar uncrowded */
 }

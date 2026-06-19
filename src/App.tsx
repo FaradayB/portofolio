@@ -55,7 +55,7 @@ export default function App() {
             key={active}
           >
             {active !== "profile" && (
-              <div className="section-head">
+              <div className="section-head hud-frame">
                 <div className="section-kicker">
                   {String(index + 1).padStart(2, "0")} — Section
                 </div>
