@@ -375,7 +375,7 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
         {sections.map((s, i) => {
           let rel = (((i * SPACING - offset) % TOTAL) + TOTAL) % TOTAL;
           if (rel > HALF) rel -= TOTAL;
-          const a = ((180 + rel) * Math.PI) / 180;
+          const a = ((180 - rel) * Math.PI) / 180;
           const x = centerX + RADIUS * Math.cos(a);
           const y = centerY + RADIUS * Math.sin(a);
           const left = x - PILL_W / 2;
