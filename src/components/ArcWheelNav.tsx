@@ -51,7 +51,7 @@ function useMediaQuery(query: string): boolean {
   return match;
 }
 
-// current theme, by observing <html data-theme="…"> (set by ThemeToggle)
+// current theme, by observing <html data-theme="…"> (set by ThemeMenu)
 function useTheme(): "dark" | "light" {
   const get = () =>
     typeof document !== "undefined" &&
