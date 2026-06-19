@@ -60,8 +60,8 @@ export default function Planet() {
           className="planet-ring"
           cx="180" cy="150" rx="165" ry="46"
           transform="rotate(-18 180 150)"
-          strokeWidth="13"
-          opacity="0.5"
+          strokeWidth="20"
+          opacity="0.3"
         />
         {/* planet body */}
         <circle cx="180" cy="150" r="92" fill="url(#saturnBody)" />
@@ -72,8 +72,8 @@ export default function Planet() {
             className="planet-ring"
             cx="180" cy="150" rx="165" ry="46"
             transform="rotate(-18 180 150)"
-            strokeWidth="13"
-            opacity="0.5"
+            strokeWidth="20"
+            opacity="0.3"
           />
         </g>
       </svg>

@@ -878,10 +878,10 @@ a { color: inherit; }
 .planet-field {
   position: fixed;
   z-index: 0;                 /* behind .shell (z-index: 1), above the void */
-  right: clamp(-200px, -7vw, -70px);
-  bottom: clamp(-200px, -7vw, -70px);
-  width: clamp(280px, 38vw, 540px);
-  height: clamp(280px, 38vw, 540px);
+  right: clamp(-360px, -25vw, -190px);   /* pushed deep into the corner: ~¼ visible */
+  bottom: clamp(-360px, -25vw, -190px);
+  width: clamp(380px, 48vw, 720px);
+  height: clamp(380px, 48vw, 720px);
   pointer-events: none;
   opacity: 0.92;
   animation: planetDrift 60s var(--ease) infinite alternate;
@@ -896,7 +896,7 @@ a { color: inherit; }
 .planet-ring { stroke: var(--accent); fill: none; }
 
 /* swap shape by theme: moon in dark, ringed planet in light */
-.planet-saturn { display: none; }
+.planet-saturn { display: none; transform: scale(1.5); }   /* ringed planet reads larger than the moon */
 :root[data-theme="light"] .planet-moon { display: none; }
 :root[data-theme="light"] .planet-saturn { display: block; }
 
