@@ -216,19 +216,6 @@ a { color: inherit; }
 .topbar-hints a { text-decoration: none; }
 .topbar-hints a:hover { color: var(--text); }
 
-.theme-toggle {
-  flex: none;
-  width: 42px; height: 42px;
-  display: grid; place-items: center;
-  border-radius: 12px;
-  border: 1px solid var(--border-strong);
-  background: var(--surface);
-  color: var(--text);
-  cursor: pointer;
-  transition: border-color 0.2s, background 0.2s, transform 0.2s var(--ease);
-}
-.theme-toggle:hover { border-color: var(--accent); transform: translateY(-1px); }
-
 /* =========================================================================
    Layout: arc nav (left) + stage (right)
    ========================================================================= */
