@@ -176,33 +176,39 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
     let lockUntil = 0;
     const onWheel = (e: WheelEvent) => {
       const start = e.target as Element | null;
-      const content = (start && typeof start.closest === "function"
-        ? start.closest(".stage")
-        : null) as HTMLElement | null;
-      if (!content) return; // ignore scrolls outside the main view
+      const find = (sel: string) =>
+        (start && typeof start.closest === "function"
+          ? start.closest(sel)
+          : null) as HTMLElement | null;
+      const content = find(".stage");
+      const overWheel = find(".arcwheel");
+      if (!content && !overWheel) return; // ignore scrolls outside the view / wheel
       const down = e.deltaY > 0;
-      // walk from the cursor up to the content; if any scrollable element
-      // (e.g. the chat log) can still scroll this way, let it — don't paginate
-      let el: HTMLElement | null = start as HTMLElement | null;
-      while (el) {
-        if (el.scrollHeight - el.clientHeight > 2) {
-          const oy = getComputedStyle(el).overflowY;
-          if (oy === "auto" || oy === "scroll") {
-            const atTop = el.scrollTop <= 2;
-            const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 2;
-            if ((down && !atBottom) || (!down && !atTop)) return;
+      // Over the main content, let any nested scrollable (e.g. the chat log)
+      // consume the scroll until it hits an edge — only then paginate. Over the
+      // wheel there is nothing to scroll, so paginate directly.
+      if (content) {
+        let el: HTMLElement | null = start as HTMLElement | null;
+        while (el) {
+          if (el.scrollHeight - el.clientHeight > 2) {
+            const oy = getComputedStyle(el).overflowY;
+            if (oy === "auto" || oy === "scroll") {
+              const atTop = el.scrollTop <= 2;
+              const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 2;
+              if ((down && !atBottom) || (!down && !atTop)) return;
+            }
           }
+          if (el === content) break;
+          el = el.parentElement;
         }
-        if (el === content) break;
-        el = el.parentElement;
       }
-      // everything is at its edge → change section
+      // content at its edge, or the cursor is over the wheel → change section
       e.preventDefault();
       const now = Date.now();
       if (now < lockUntil || Math.abs(e.deltaY) < 1) return;
       lockUntil = now + 600;
       step(down ? 1 : -1);   // scroll down → next section (profile → education → …)
-      content.scrollTop = 0; // start the new section at the top
+      if (content) content.scrollTop = 0; // start the new section at the top
     };
     window.addEventListener("wheel", onWheel, { passive: false });
     return () => window.removeEventListener("wheel", onWheel);
@@ -240,13 +246,18 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
       active: true, moved: false,
       startY: e.clientY, startOffset: offsetRef.current,
     };
-    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+    // NB: don't capture the pointer here — capturing on pointerdown swallows
+    // the click event on the pills. Capture lazily once a real drag begins.
   }
   function onPointerMove(e: React.PointerEvent) {
     const d = dragRef.current;
     if (!d.active) return;
     const dy = e.clientY - d.startY;
-    if (Math.abs(dy) > 5) d.moved = true;
+    if (!d.moved) {
+      if (Math.abs(dy) <= 5) return;   // tiny movement — still a click, not a drag
+      d.moved = true;
+      (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+    }
     const o = d.startOffset + dy * DEG_PER_PX;
     offsetRef.current = o;
     targetRef.current = o;
@@ -257,8 +268,10 @@ export default function ArcWheelNav({ active, onSelect }: Props) {
     const d = dragRef.current;
     if (!d.active) return;
     d.active = false;
-    (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
-    animate(); // settle / snap to nearest
+    if (d.moved) {
+      (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
+      animate(); // settle / snap to nearest after a drag
+    }
   }
 
   function onKeyDown(e: React.KeyboardEvent) {
