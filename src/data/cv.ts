@@ -222,7 +222,6 @@ export const cv: CV = {
     { title: "Machine Learning Specialization", sub: "DeepLearning.AI, 2024" },
   ],
   contact: [
-    { icon: "phone", label: "Phone", value: "+6281282658563", href: "tel:+6281282658563" },
     { icon: "mail", label: "Email", value: "faradaybarrf@gmail.com", href: "mailto:faradaybarrf@gmail.com" },
     { icon: "linkedin", label: "LinkedIn", value: "linkedin.com/in/faradaybarr", href: "https://linkedin.com/in/faradaybarr" },
     { icon: "github", label: "GitHub", value: "github.com/FaradayB", href: "https://github.com/FaradayB" },

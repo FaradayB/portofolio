@@ -1,0 +1,235 @@
+diff --git a/src/styles/cv.css b/src/styles/cv.css
+index b9ca8c6..03012fc 100644
+--- a/src/styles/cv.css
++++ b/src/styles/cv.css
+@@ -15,27 +15,28 @@
+   --step-1:  clamp(1.1rem, 1rem + 0.4vw, 1.3rem);
+   --step-2:  clamp(1.4rem, 1.2rem + 0.9vw, 1.9rem);
+   --step-3:  clamp(1.9rem, 1.5rem + 1.8vw, 2.9rem);
+   --step-4:  clamp(2.6rem, 1.9rem + 3.4vw, 4.6rem);
+ 
+   --radius: 14px;
+   --radius-pill: 999px;
+   --ease: cubic-bezier(0.22, 1, 0.36, 1);
++  --ease-weighted: cubic-bezier(0.16, 1, 0.3, 1);
+ 
+   /* arc-wheel geometry (kept in sync with ArcWheelNav.tsx) */
+   --pill-w: 196px;
+   --pill-h: 46px;
+ }
+ 
+ /* ---------- dark (default) ---------- */
+ :root,
+ :root[data-theme="dark"] {
+   color-scheme: dark;
+-  --bg: #0a0a0b;
++  --bg: #07080f;
+   --panel: #111113;
+   --surface: #161618;
+   --surface-2: #1d1d20;
+   --text: #f4f4f2;
+   --muted: #9a9a97;
+   --faint: #65655f;
+   --border: #242427;
+   --border-strong: #34343a;
+@@ -76,29 +77,59 @@ body {
+   line-height: 1.6;
+   color: var(--text);
+   background: var(--bg);
+   -webkit-font-smoothing: antialiased;
+   text-rendering: optimizeLegibility;
+   transition: background-color 0.4s var(--ease), color 0.4s var(--ease);
+ }
+ 
+-/* subtle grain/texture via layered radial dots — flat, cheap, no images */
++/* starfield: existing dot-grain + two sparse star layers, gently twinkling.
++   Reads as texture first, "space" only on a second look. */
+ body::before {
+   content: "";
+   position: fixed;
+   inset: 0;
+   z-index: 0;
+   pointer-events: none;
+   opacity: 0.5;
+   background:
++    /* sparse bright stars */
++    radial-gradient(circle at 20% 30%, color-mix(in srgb, var(--text) 65%, transparent) 0.7px, transparent 1.4px) 0 0 / 230px 210px,
++    radial-gradient(circle at 72% 78%, color-mix(in srgb, var(--text) 50%, transparent) 0.7px, transparent 1.4px) 0 0 / 310px 290px,
++    radial-gradient(circle at 45% 60%, color-mix(in srgb, var(--text) 40%, transparent) 0.6px, transparent 1.3px) 0 0 / 180px 260px,
++    /* base dot-grain (unchanged) */
+     radial-gradient(circle at 1px 1px, var(--border) 1px, transparent 0) 0 0 / 26px 26px;
+   -webkit-mask-image: radial-gradient(ellipse 80% 60% at 30% 30%, #000 30%, transparent 100%);
+           mask-image: radial-gradient(ellipse 80% 60% at 30% 30%, #000 30%, transparent 100%);
++  animation: starTwinkle 7s var(--ease) infinite alternate;
+ }
++@keyframes starTwinkle {
++  from { opacity: 0.44; }
++  to   { opacity: 0.56; }
++}
++
++/* one soft, slow-drifting nebula blob behind content (never over text) */
++body::after {
++  content: "";
++  position: fixed;
++  inset: 0;
++  z-index: 0;
++  pointer-events: none;
++  opacity: 0.55;
++  background:
++    radial-gradient(42% 50% at 18% 28%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 70%),
++    radial-gradient(46% 42% at 82% 76%, color-mix(in srgb, #6d4bff 16%, transparent), transparent 72%);
++  animation: nebulaDrift 44s var(--ease) infinite alternate;
++}
++@keyframes nebulaDrift {
++  from { transform: translate3d(-2%, -1%, 0) scale(1.05); }
++  to   { transform: translate3d(2%, 1.5%, 0) scale(1.12); }
++}
++:root[data-theme="light"] body::after { opacity: 0.3; }
+ 
+ a { color: inherit; }
+ ::selection { background: var(--accent); color: var(--on-accent); }
+ 
+ :focus-visible {
+   outline: 2px solid var(--accent);
+   outline-offset: 3px;
+   border-radius: 6px;
+@@ -205,17 +236,29 @@ a { color: inherit; }
+   display: flex;
+   flex-direction: column;
+   overflow-y: auto;            /* tall sections scroll here, not the page */
+   scrollbar-width: none;       /* hide the scrollbar (Firefox) */
+ }
+ .stage::-webkit-scrollbar { display: none; }  /* hide the scrollbar (WebKit) */
+ 
+ /* section enter animation */
+-.section-head { margin-bottom: 28px; }
++.section-head { margin-bottom: 28px; position: relative; }
++.section-head::before {
++  content: "";
++  position: absolute;
++  top: -10px;
++  left: -14px;
++  width: 14px;
++  height: 14px;
++  border-top: 1px solid var(--accent);
++  border-left: 1px solid var(--accent);
++  opacity: 0.5;
++  pointer-events: none;
++}
+ .section-kicker {
+   font-family: var(--font-mono);
+   font-size: var(--step-00);
+   letter-spacing: 0.24em;
+   text-transform: uppercase;
+   color: var(--accent);
+   display: flex; align-items: center; gap: 10px;
+ }
+@@ -231,38 +274,38 @@ a { color: inherit; }
+   margin: 12px 0 0;
+ }
+ .view {
+   /* dead space below long sections so their bottom can scroll up into a
+      comfortable mid-screen reading zone instead of hugging the screen edge */
+   padding-bottom: clamp(80px, 40vh, 420px);
+ }
+ /* directional slide: the new section enters from the scroll direction */
+-.view[data-dir="down"] { animation: viewSlideUp 0.5s var(--ease) both; }
+-.view[data-dir="up"]   { animation: viewSlideDown 0.5s var(--ease) both; }
++.view[data-dir="down"] { animation: viewSlideUp 0.66s var(--ease-weighted) both; }
++.view[data-dir="up"]   { animation: viewSlideDown 0.66s var(--ease-weighted) both; }
+ 
+ /* Companion: no dead space — fill the area and let the chat manage itself */
+ .view--fixed {
+   padding-bottom: 0;
+   height: 100%;
+   min-height: 0;
+   display: flex;
+   flex-direction: column;
+ }
+ .view--fixed .chat {
+   flex: 1;
+   height: auto;
+   min-height: 0;
+ }
+ @keyframes viewSlideUp {
+-  from { opacity: 0; transform: translateY(40px); }
++  from { opacity: 0; transform: translateY(54px); }
+   to   { opacity: 1; transform: none; }
+ }
+ @keyframes viewSlideDown {
+-  from { opacity: 0; transform: translateY(-40px); }
++  from { opacity: 0; transform: translateY(-54px); }
+   to   { opacity: 1; transform: none; }
+ }
+ 
+ /* =========================================================================
+    Arc-wheel navigation
+    ========================================================================= */
+ .arcwheel {
+   position: relative;
+@@ -374,16 +417,19 @@ a { color: inherit; }
+ }
+ .arc-pill .arc-ico { flex: none; display: grid; place-items: center; color: var(--muted); transition: color 0.25s; }
+ .arc-pill .arc-label { overflow: hidden; text-overflow: ellipsis; }
+ .arc-pill:hover { border-color: var(--accent); }
+ .arc-pill.is-active {
+   background: var(--accent);
+   border-color: var(--accent);
+   color: var(--on-accent);
++  box-shadow:
++    0 0 22px -6px color-mix(in srgb, var(--accent) 55%, transparent),
++    0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent);
+ }
+ .arc-pill.is-active .arc-ico { color: var(--on-accent); }
+ 
+ /* =========================================================================
+    Reduced-motion / fallback vertical list
+    ========================================================================= */
+ .arclist {
+   display: flex;
+@@ -444,16 +490,26 @@ a { color: inherit; }
+   position: relative;
+   background: var(--surface);
+   border: 1px solid var(--border);
+   border-radius: var(--radius);
+   padding: 22px 24px;
+   transition: border-color 0.25s var(--ease), transform 0.25s var(--ease);
+ }
+ .card:hover { border-color: var(--border-strong); transform: translateY(-2px); }
++/* single cut corner — a quiet "designed panel" tell. clip-path overrides
++   border-radius on these elements; the straight edges keep their border. */
++.card,
++.contact-item {
++  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
++}
++.brand-mark,
++.theme-toggle {
++  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
++}
+ .card-title { font-family: var(--font-display); font-weight: 700; font-size: var(--step-1); letter-spacing: -0.015em; }
+ .card-sub {
+   font-family: var(--font-mono);
+   font-size: var(--step-00);
+   color: var(--muted);
+   margin: 6px 0 12px;
+   letter-spacing: 0.02em;
+ }
+@@ -476,17 +532,17 @@ a { color: inherit; }
+   font-family: var(--font-mono);
+   font-size: var(--step-00);
+   letter-spacing: 0.04em;
+   padding: 9px 16px;
+   border: 1px solid var(--border-strong);
+   border-radius: var(--radius-pill);
+   color: var(--text);
+ }
+-.stat-pill::before { content: "→ "; color: var(--accent); }
++.stat-pill::before { content: "◇ "; color: var(--accent); }
+ .btn-download {
+   display: inline-flex;
+   align-items: center;
+   gap: 10px;
+   background: var(--accent);
+   color: var(--on-accent);
+   border-radius: var(--radius-pill);
+   font-family: var(--font-mono);
