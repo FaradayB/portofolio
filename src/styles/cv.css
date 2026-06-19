@@ -871,3 +871,35 @@ a { color: inherit; }
 @media (max-width: 540px) {
   .theme-menu-label { display: none; }   /* keep the small-screen topbar uncrowded */
 }
+
+/* =========================================================================
+   Corner celestial body — moon (dark) / ringed planet (light), behind content
+   ========================================================================= */
+.planet-field {
+  position: fixed;
+  z-index: 0;                 /* behind .shell (z-index: 1), above the void */
+  right: clamp(-200px, -7vw, -70px);
+  bottom: clamp(-200px, -7vw, -70px);
+  width: clamp(280px, 38vw, 540px);
+  height: clamp(280px, 38vw, 540px);
+  pointer-events: none;
+  opacity: 0.92;
+  animation: planetDrift 60s var(--ease) infinite alternate;
+}
+@keyframes planetDrift {
+  from { transform: translate3d(0, 0, 0) rotate(0deg); }
+  to   { transform: translate3d(-1.6%, -1.6%, 0) rotate(1.4deg); }
+}
+.planet { display: block; width: 100%; height: 100%; }
+/* energy-tinted rim-light / ring follow the active accent */
+.planet-rim { stroke: var(--accent); fill: none; }
+.planet-ring { stroke: var(--accent); fill: none; }
+
+/* swap shape by theme: moon in dark, ringed planet in light */
+.planet-saturn { display: none; }
+:root[data-theme="light"] .planet-moon { display: none; }
+:root[data-theme="light"] .planet-saturn { display: block; }
+
+@media (prefers-reduced-motion: reduce) {
+  .planet-field { animation: none; }
+}

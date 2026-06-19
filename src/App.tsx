@@ -2,6 +2,7 @@ import { useState } from "react";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ArcWheelNav from "./components/ArcWheelNav";
+import Planet from "./components/Planet";
 import { sections, SectionId } from "./data/sections";
 import Profile from "./sections/Profile";
 import Education from "./sections/Education";
@@ -44,7 +45,9 @@ export default function App() {
   }
 
   return (
-    <div className="shell">
+    <>
+      <Planet />
+      <div className="shell">
       <Header />
       <div className="layout">
         <ArcWheelNav active={active} onSelect={setActive} />
@@ -67,6 +70,7 @@ export default function App() {
         </main>
       </div>
       <Footer hint={meta.hint} />
-    </div>
+      </div>
+    </>
   );
 }
