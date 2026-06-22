@@ -879,7 +879,7 @@ a { color: inherit; }
   position: fixed;
   z-index: 0;                 /* behind .shell (z-index: 1), above the void */
   right: clamp(-1080px, -25vw, -190px);   /* pushed deep into the corner: ~¼ visible */
-  bottom: clamp(-360px, -25vw, -190px);
+  bottom: clamp(-1080px, -25vw, -190px);
   width: clamp(380px, 48vw, 720px);
   height: clamp(380px, 48vw, 720px);
   pointer-events: none;
