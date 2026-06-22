@@ -53,31 +53,10 @@ export default function Planet() {
             <stop offset="74%" stopColor="#ffb24a" stopOpacity="0.32" />
             <stop offset="100%" stopColor="#ffb24a" stopOpacity="0" />
           </radialGradient>
-          <filter id="sunGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="5" />
-          </filter>
-          {/* one ray; rotated copies below build the full corona */}
-          <line id="sunRay" x1="150" y1="44" x2="150" y2="8" strokeWidth="6" strokeLinecap="round" />
         </defs>
 
         {/* corona halo */}
         <circle cx="150" cy="150" r="132" fill="url(#sunCorona)" />
-
-        {/* energy-tinted rays radiating from the disc */}
-        <g className="planet-rays" filter="url(#sunGlow)" opacity="0.5">
-          <use href="#sunRay" />
-          <use href="#sunRay" transform="rotate(30 150 150)" />
-          <use href="#sunRay" transform="rotate(60 150 150)" />
-          <use href="#sunRay" transform="rotate(90 150 150)" />
-          <use href="#sunRay" transform="rotate(120 150 150)" />
-          <use href="#sunRay" transform="rotate(150 150 150)" />
-          <use href="#sunRay" transform="rotate(180 150 150)" />
-          <use href="#sunRay" transform="rotate(210 150 150)" />
-          <use href="#sunRay" transform="rotate(240 150 150)" />
-          <use href="#sunRay" transform="rotate(270 150 150)" />
-          <use href="#sunRay" transform="rotate(300 150 150)" />
-          <use href="#sunRay" transform="rotate(330 150 150)" />
-        </g>
 
         {/* sun disc */}
         <circle cx="150" cy="150" r="100" fill="url(#sunBody)" />
