@@ -38,8 +38,8 @@ export default function Planet() {
         />
       </svg>
 
-      {/* Sun — light theme. Body, corona and rays are tinted with the active
-          energy color: gradient stops + ray stroke read `var(--accent)` via CSS. */}
+      {/* Sun — light theme. Body and corona are tinted with the active energy
+          color: gradient stops read `var(--accent)` via CSS. */}
       <svg className="planet planet-sun" viewBox="0 0 300 300" fill="none">
         <defs>
           <radialGradient id="sunBody" cx="42%" cy="38%" r="70%">
@@ -53,31 +53,10 @@ export default function Planet() {
             <stop className="sun-halo-mid" offset="74%" />
             <stop className="sun-halo-out" offset="100%" />
           </radialGradient>
-          <filter id="sunGlow" x="-80%" y="-80%" width="260%" height="260%">
-            <feGaussianBlur stdDeviation="11" />
-          </filter>
-          {/* one ray; rotated copies below build the full corona */}
-          <line id="sunRay" x1="150" y1="46" x2="150" y2="6" strokeWidth="9" strokeLinecap="round" />
         </defs>
 
         {/* corona halo */}
         <circle cx="150" cy="150" r="132" fill="url(#sunCorona)" />
-
-        {/* accent-tinted rays radiating from the disc */}
-        <g className="planet-rays" filter="url(#sunGlow)" opacity="0.5">
-          <use href="#sunRay" />
-          <use href="#sunRay" transform="rotate(30 150 150)" />
-          <use href="#sunRay" transform="rotate(60 150 150)" />
-          <use href="#sunRay" transform="rotate(90 150 150)" />
-          <use href="#sunRay" transform="rotate(120 150 150)" />
-          <use href="#sunRay" transform="rotate(150 150 150)" />
-          <use href="#sunRay" transform="rotate(180 150 150)" />
-          <use href="#sunRay" transform="rotate(210 150 150)" />
-          <use href="#sunRay" transform="rotate(240 150 150)" />
-          <use href="#sunRay" transform="rotate(270 150 150)" />
-          <use href="#sunRay" transform="rotate(300 150 150)" />
-          <use href="#sunRay" transform="rotate(330 150 150)" />
-        </g>
 
         {/* sun disc */}
         <circle cx="150" cy="150" r="100" fill="url(#sunBody)" />
