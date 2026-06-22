@@ -891,8 +891,16 @@ a { color: inherit; }
   to   { transform: translate3d(-1.6%, -1.6%, 0) rotate(1.4deg); }
 }
 .planet { display: block; width: 100%; height: 100%; }
-/* energy-tinted rim-light follows the active accent */
+/* energy-tinted rim-light / sun rays follow the active accent */
 .planet-rim { stroke: var(--accent); fill: none; }
+.planet-rays { stroke: var(--accent); fill: none; }
+
+/* sun gradients tinted with the active energy color (hot center → accent edge) */
+.sun-core { stop-color: color-mix(in srgb, var(--accent) 22%, #fff); }
+.sun-mid  { stop-color: var(--accent); }
+.sun-edge { stop-color: color-mix(in srgb, var(--accent) 72%, #000); }
+.sun-halo-out { stop-color: var(--accent); stop-opacity: 0; }
+.sun-halo-mid { stop-color: var(--accent); stop-opacity: 0.32; }
 
 /* swap shape by theme: moon in dark, sun in light */
 .planet-sun { display: none; transform: scale(1.15); }   /* corona reads a touch larger than the moon */
