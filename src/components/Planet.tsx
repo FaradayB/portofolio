@@ -1,10 +1,10 @@
 /**
  * Decorative celestial body in the bottom-right corner, anchored partially
  * off-screen and fixed BEHIND all content. Dark theme shows a cratered moon;
- * light theme shows a ringed planet (Saturn). Both are rendered and CSS reveals
- * the one matching the active <html data-theme>. The rim-light / ring are
- * tinted with the active energy color via `stroke: var(--accent)` in CSS.
- * Non-interactive (pointer-events: none) — never touches readability.
+ * light theme shows a glowing sun. Both are rendered and CSS reveals the one
+ * matching the active <html data-theme>. The moon's rim-light and the sun's
+ * rays are tinted with the active energy color via `stroke: var(--accent)` in
+ * CSS. Non-interactive (pointer-events: none) — never touches readability.
  */
 export default function Planet() {
   return (
@@ -38,44 +38,51 @@ export default function Planet() {
         />
       </svg>
 
-      {/* Ringed planet — light theme */}
-      <svg className="planet planet-saturn" viewBox="0 0 360 300" fill="none">
+      {/* Sun — light theme */}
+      <svg className="planet planet-sun" viewBox="0 0 300 300" fill="none">
         <defs>
-          <radialGradient id="saturnBody" cx="38%" cy="33%" r="80%">
-            <stop offset="0%" stopColor="#f6f1e6" />
-            <stop offset="60%" stopColor="#e4ddcb" />
-            <stop offset="100%" stopColor="#cdc3ad" />
+          <radialGradient id="sunBody" cx="42%" cy="38%" r="70%">
+            <stop offset="0%" stopColor="#fff7e0" />
+            <stop offset="45%" stopColor="#ffdf8a" />
+            <stop offset="80%" stopColor="#ffb24a" />
+            <stop offset="100%" stopColor="#f59023" />
           </radialGradient>
-          <radialGradient id="saturnShade" cx="64%" cy="70%" r="60%">
-            <stop offset="0%" stopColor="#000" stopOpacity="0.16" />
-            <stop offset="70%" stopColor="#000" stopOpacity="0" />
+          {/* soft warm halo bleeding past the disc */}
+          <radialGradient id="sunCorona" cx="50%" cy="50%" r="50%">
+            <stop offset="52%" stopColor="#ffb24a" stopOpacity="0" />
+            <stop offset="74%" stopColor="#ffb24a" stopOpacity="0.32" />
+            <stop offset="100%" stopColor="#ffb24a" stopOpacity="0" />
           </radialGradient>
-          {/* lower half of the canvas — reveals the ring's near side over the body */}
-          <clipPath id="ringFront">
-            <rect x="0" y="150" width="360" height="160" />
-          </clipPath>
+          <filter id="sunGlow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="5" />
+          </filter>
+          {/* one ray; rotated copies below build the full corona */}
+          <line id="sunRay" x1="150" y1="44" x2="150" y2="8" strokeWidth="6" strokeLinecap="round" />
         </defs>
-        {/* ring — full ellipse (its far side is then covered by the body) */}
-        <ellipse
-          className="planet-ring"
-          cx="180" cy="150" rx="165" ry="46"
-          transform="rotate(-18 180 150)"
-          strokeWidth="20"
-          opacity="0.3"
-        />
-        {/* planet body */}
-        <circle cx="180" cy="150" r="92" fill="url(#saturnBody)" />
-        <circle cx="180" cy="150" r="92" fill="url(#saturnShade)" />
-        {/* ring — near side, drawn over the body */}
-        <g clipPath="url(#ringFront)">
-          <ellipse
-            className="planet-ring"
-            cx="180" cy="150" rx="165" ry="46"
-            transform="rotate(-18 180 150)"
-            strokeWidth="20"
-            opacity="0.3"
-          />
+
+        {/* corona halo */}
+        <circle cx="150" cy="150" r="132" fill="url(#sunCorona)" />
+
+        {/* energy-tinted rays radiating from the disc */}
+        <g className="planet-rays" filter="url(#sunGlow)" opacity="0.5">
+          <use href="#sunRay" />
+          <use href="#sunRay" transform="rotate(30 150 150)" />
+          <use href="#sunRay" transform="rotate(60 150 150)" />
+          <use href="#sunRay" transform="rotate(90 150 150)" />
+          <use href="#sunRay" transform="rotate(120 150 150)" />
+          <use href="#sunRay" transform="rotate(150 150 150)" />
+          <use href="#sunRay" transform="rotate(180 150 150)" />
+          <use href="#sunRay" transform="rotate(210 150 150)" />
+          <use href="#sunRay" transform="rotate(240 150 150)" />
+          <use href="#sunRay" transform="rotate(270 150 150)" />
+          <use href="#sunRay" transform="rotate(300 150 150)" />
+          <use href="#sunRay" transform="rotate(330 150 150)" />
         </g>
+
+        {/* sun disc */}
+        <circle cx="150" cy="150" r="100" fill="url(#sunBody)" />
+        {/* upper-left highlight, matching the moon's lit edge */}
+        <circle cx="150" cy="150" r="100" fill="url(#sunCorona)" opacity="0.4" />
       </svg>
     </div>
   );

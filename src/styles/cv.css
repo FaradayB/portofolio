@@ -891,14 +891,14 @@ a { color: inherit; }
   to   { transform: translate3d(-1.6%, -1.6%, 0) rotate(1.4deg); }
 }
 .planet { display: block; width: 100%; height: 100%; }
-/* energy-tinted rim-light / ring follow the active accent */
+/* energy-tinted rim-light / rays follow the active accent */
 .planet-rim { stroke: var(--accent); fill: none; }
-.planet-ring { stroke: var(--accent); fill: none; }
+.planet-rays { stroke: var(--accent); fill: none; }
 
-/* swap shape by theme: moon in dark, ringed planet in light */
-.planet-saturn { display: none; transform: scale(1.5); }   /* ringed planet reads larger than the moon */
+/* swap shape by theme: moon in dark, sun in light */
+.planet-sun { display: none; transform: scale(1.15); }   /* corona reads a touch larger than the moon */
 :root[data-theme="light"] .planet-moon { display: none; }
-:root[data-theme="light"] .planet-saturn { display: block; }
+:root[data-theme="light"] .planet-sun { display: block; }
 
 @media (prefers-reduced-motion: reduce) {
   .planet-field { animation: none; }
