@@ -119,24 +119,6 @@ body::before {
   to   { opacity: 0.56; }
 }
 
-/* one soft, slow-drifting nebula blob behind content (never over text) */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.55;
-  background:
-    radial-gradient(42% 50% at 18% 28%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 70%),
-    radial-gradient(46% 42% at 82% 76%, color-mix(in srgb, #6d4bff 16%, transparent), transparent 72%);
-  animation: nebulaDrift 44s var(--ease) infinite alternate;
-}
-@keyframes nebulaDrift {
-  from { transform: translate3d(-2%, -1%, 0) scale(1.05); }
-  to   { transform: translate3d(2%, 1.5%, 0) scale(1.12); }
-}
-:root[data-theme="light"] body::after { opacity: 1.0; }
 
 a { color: inherit; }
 ::selection { background: var(--accent); color: var(--on-accent); }

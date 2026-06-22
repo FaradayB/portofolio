@@ -53,11 +53,11 @@ export default function Planet() {
             <stop className="sun-halo-mid" offset="74%" />
             <stop className="sun-halo-out" offset="100%" />
           </radialGradient>
-          <filter id="sunGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="5" />
+          <filter id="sunGlow" x="-80%" y="-80%" width="260%" height="260%">
+            <feGaussianBlur stdDeviation="11" />
           </filter>
           {/* one ray; rotated copies below build the full corona */}
-          <line id="sunRay" x1="150" y1="44" x2="150" y2="8" strokeWidth="6" strokeLinecap="round" />
+          <line id="sunRay" x1="150" y1="46" x2="150" y2="6" strokeWidth="9" strokeLinecap="round" />
         </defs>
 
         {/* corona halo */}
