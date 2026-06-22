@@ -878,10 +878,10 @@ a { color: inherit; }
 .planet-field {
   position: fixed;
   z-index: 0;                 /* behind .shell (z-index: 1), above the void */
-  right: clamp(-1080px, -25vw, -190px);   /* pushed deep into the corner: ~¼ visible */
-  bottom: clamp(-1080px, -25vw, -190px);
-  width: clamp(720px, 48vw, 720px);
-  height: clamp(380px, 48vw, 720px);
+  right: clamp(-1150px, -72vw, -560px);   /* pushed deep into the corner: only a chunk shows */
+  bottom: clamp(-1150px, -72vw, -560px);
+  width: clamp(700px, 90vw, 1400px);
+  height: clamp(700px, 90vw, 1400px);
   pointer-events: none;
   opacity: 0.92;
   animation: planetDrift 60s var(--ease) infinite alternate;
