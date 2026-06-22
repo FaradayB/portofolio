@@ -878,8 +878,8 @@ a { color: inherit; }
 .planet-field {
   position: fixed;
   z-index: 0;                 /* behind .shell (z-index: 1), above the void */
-  right: clamp(-800px, -72vw, -560px);   /* pushed deep into the corner: only a chunk shows */
-  bottom: clamp(-1150px, -72vw, -560px);
+  right: clamp(-360px, -72vw, -560px);   /* pushed deep into the corner: only a chunk shows */
+  bottom: clamp(-360px, -72vw, -560px);
   width: clamp(700px, 90vw, 1400px);
   height: clamp(700px, 90vw, 1400px);
   pointer-events: none;
