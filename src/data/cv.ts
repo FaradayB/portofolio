@@ -62,8 +62,8 @@ export const cv: CV = {
   bio:
     "I build end-to-end AI systems from model training to cloud deployment. " +
     "Experienced across LLM / RAG, computer vision (YOLOv8), and IoT, with " +
-    "production MLOps on FastAPI, Docker, GCP, Prometheus and Grafana.\n" +
-    "Computer Engineering graduate, Telkom University — highest GPA in my major.",
+    "production MLOps on FastAPI, Docker, GCP, Prometheus and Grafana." +
+    "\n\nComputer Engineering, Telkom University — highest GPA in my major.",
   emailHint: "faradaybarrf@gmail.com",
   githubHint: "github.com/FaradayB",
   resumePdf: "/CV-FARADAY%20BARR%20FATAHILLAH-1.pdf",
