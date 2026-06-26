@@ -6,7 +6,13 @@ export default function Profile() {
     <div className="profile hud-frame">
       <div className="section-kicker">Available for AI roles</div>
       <h1 className="profile-role">{cv.role}</h1>
-      <p className="profile-bio">{cv.bio}</p>
+      <div className="flex flex-col gap-4"> 
+        {cv.bio.map((paragraph, index) => (
+          <p key={index} className="profile-bio">
+            {paragraph}
+          </p>
+        ))}
+      </div>
       <div className="stat-row">
         {cv.stats.map((s) => (
           <span className="stat-pill" key={s}>{s}</span>

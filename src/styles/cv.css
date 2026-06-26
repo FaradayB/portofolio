@@ -525,7 +525,7 @@ a { color: inherit; }
   margin: 0 0 22px;
 }
 .profile-role .accent { color: var(--accent); }
-.profile-bio { font-size: var(--step-1); color: var(--muted); line-height: 1.6; max-width: 60ch; }
+.profile-bio { font-size: var(--step-1); color: var(--muted); line-height: 1.6; max-width: 60ch; white-space: pre-line;}
 .stat-row { display: flex; flex-wrap: wrap; gap: 12px; margin: 30px 0; }
 .stat-pill {
   font-family: var(--font-mono);
