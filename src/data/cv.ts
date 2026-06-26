@@ -60,14 +60,14 @@ export const cv: CV = {
   name: "Faraday Barr Fatahillah",
   role: "AI Engineer",
   bio:
-    "I build end-to-end AI systems — from model training to cloud deployment. " +
+    "I build end-to-end AI systems from model training to cloud deployment. " +
     "Experienced across LLM / RAG, computer vision (YOLOv8), and IoT, with " +
-    "production MLOps on FastAPI, Docker, GCP, Prometheus and Grafana. " +
+    "production MLOps on FastAPI, Docker, GCP, Prometheus and Grafana.\n" +
     "Computer Engineering graduate, Telkom University — highest GPA in my major.",
   emailHint: "faradaybarrf@gmail.com",
   githubHint: "github.com/FaradayB",
   resumePdf: "/CV-FARADAY%20BARR%20FATAHILLAH-1.pdf",
-  stats: ["GPA 3.88", "250+ Students Mentored", "Top of Major"],
+  stats: ["GPA 3.88", "Top of Major"],
   education: {
     title: "Bachelor of Computer Engineering",
     org: "Telkom University — Bandung, Indonesia",
@@ -90,7 +90,7 @@ export const cv: CV = {
     {
       title: "Deputy Assistant Coordinator",
       org: "i-Smile Laboratory — Bandung",
-      date: "Jul 2024 – Jul 2025",
+      date: "Jul 2024 – Jun 2025",
       body:
         "Designed and delivered 7 hands-on AI practicum sessions in Python. Led ML " +
         "study group for 50+ students covering fundamentals and workflows.",
@@ -110,6 +110,14 @@ export const cv: CV = {
       body:
         "Assisted 5 courses including IoT and Control Systems. Contributed to course " +
         "materials, assessments, and grading.",
+    },
+    {
+      title: "Assistant Coordinator",
+      org: "SEA Laboratory — Bandung",
+      date: "Jul 2023 – Jun 2024",
+      body:
+        "Designed and delivered 7 hands-on AI practicum sessions in Python. Led ML " +
+        "study group for 50+ students covering fundamentals and workflows.",
     },
   ],
   projects: [
