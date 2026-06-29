@@ -1,23 +1,14 @@
-<!--
-HOW TO FILL THIS IN
-This file answers "What certifications do you have?" List each certificate with
-who issued it and when, plus a short, plain-language note on what it covered or
-why you took it. Write it as if you're telling someone, not as a table. One
-short paragraph (or a tight line) per certificate is fine here. Replace every
-[FILL IN: ...] and delete these comments when done.
--->
+# My certifications
 
-# Certifications I've earned
+## What certifications do you have?
 
-[FILL IN: One opening sentence — e.g. "I've picked up a handful of certificates
-along the way, mostly around machine learning."]
+Most of my certifications are in machine learning. I've completed the Machine
+Learning Specialization and the DeepLearning.AI TensorFlow Developer
+Specialization, both from DeepLearning.AI in 2024.
 
-[FILL IN: Certificate name — issuer, year.] [FILL IN: A short note on what it
-covered or what you got out of it.]
+## Do you have any others?
 
-[FILL IN: Certificate name — issuer, year.] [FILL IN: A short note on what it
-covered.]
-
-[FILL IN: Keep adding one per certificate. If a certificate has a verification
-link you're happy to share, add it at the end of its line. If you have none yet,
-say so honestly in one line and remove the rest.]
+Yes. I've also finished "Structuring Machine Learning Projects" from
+DeepLearning.AI and "Generative AI for Everyone" on Coursera, both in 2024.
+Together these cover the practical side of building, structuring, and shipping
+machine-learning projects.

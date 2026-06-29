@@ -1,57 +1,69 @@
 # Projects — how to add them
 
-This folder holds **one markdown file per project**. The chatbot reads each file
-on its own, so every project file should make sense by itself without referring
-to any other file.
+This folder holds **one markdown file per project**. The chatbot reads and
+retrieves each file on its own, so write every project file to stand on its own:
+name the project inside the text, and don't refer to "the other files."
 
 > Note: this `README.md` is **not** part of the chatbot's knowledge — the
 > ingestion step skips every `README.md`. It's just instructions for you.
 
 ## File naming convention
 
-Use lowercase words separated by hyphens, ending in `.md`:
+One project per file, lowercase words separated by hyphens, ending in `.md`:
 
 ```
 project-<short-name>.md
 ```
 
-For example:
+For example: `project-predictive-maintenance.md`, `project-rag-chatbot.md`,
+`project-fall-detection.md`. To remove a project from the chatbot, delete its
+file and re-run the ingestion.
 
-```
-project-predictive-maintenance.md
-project-rag-chatbot.md
-project-fall-detection.md
-```
+## What makes a file easy for the chatbot to use
 
-Keep the short name descriptive but brief. One project per file. To remove a
-project from the chatbot, delete its file and re-run the ingestion.
+Write it the way you'd answer if someone asked about the project out loud. Use
+question-style headings (the kind a visitor would actually ask), give a clear
+first-person answer under each, and keep every answer self-contained by naming
+the project in the text rather than relying on the heading alone. Plain language
+beats jargon.
 
-## Template for a single project file
+## Template (with a real example filled in)
 
-Copy everything in the block below into a new file, fill in every
-`[FILL IN: ...]`, and delete the instruction comment. Write in first person and
-plain language, the way you'd describe the project if someone asked about it.
+Copy this into a new file and replace the content with your own project:
 
 ```markdown
-<!-- Fill in every [FILL IN: ...], then delete this comment. First person. -->
+# AI Predictive Maintenance
 
-# [FILL IN: Project name]
+## What is this project?
 
-**What it is:** [FILL IN: one or two sentences describing what this project is,
-in plain language.]
+AI Predictive Maintenance is an end-to-end system I built that predicts
+equipment failures before they happen, so maintenance can be scheduled instead
+of reacting to breakdowns.
 
-**The problem it solved:** [FILL IN: what problem or need this addressed, and why
-it mattered.]
+## What problem does it solve?
 
-**My role:** [FILL IN: what you personally did. Be specific about your part,
-especially if it was a team project.]
+Unplanned equipment downtime is expensive. The system watches sensor data and
+flags machines that are likely to fail soon, which gives teams time to act
+early.
 
-**Tech I used:** [FILL IN: the main languages, frameworks, and tools, with a
-short note on how each was used rather than just a list.]
+## What was my role?
 
-**Outcome:** [FILL IN: what came out of it — results, metrics, what shipped, what
-you learned. Be honest; "it didn't ship but I learned X" is a fine outcome.]
+I built the whole pipeline myself, from preparing the data and training the
+model to deploying it as a service and setting up the monitoring around it.
 
-**Links:** [FILL IN: repo, demo, write-up, or video links. Write "none yet" if
-there aren't any.]
+## What technology did I use?
+
+I trained the model in Python, served it through a FastAPI app, containerized it
+with Docker, and ran it on Google Cloud Platform. I monitored it in production
+with Prometheus and Grafana dashboards.
+
+## What was the outcome?
+
+The system runs as a containerized service with live monitoring, and it gave me
+hands-on experience taking a model all the way from training to a deployed,
+observable production service.
+
+## Where can I learn more?
+
+(Add a repo, demo, or write-up link here, or say there isn't a public one yet.)
 ```

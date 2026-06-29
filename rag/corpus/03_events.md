@@ -1,26 +1,19 @@
-<!--
-HOW TO FILL THIS IN
-This file answers "What events / programs / bootcamps / competitions have you
-done?" Include things like cohorts, hackathons, talks you gave or organized,
-conferences, and training programs. For each one, say what it was, when, and
-what you actually did or got out of it — in a sentence or two, conversationally.
-One short paragraph per event. Replace every [FILL IN: ...] and delete these
-comments when done.
--->
+# Programs and events I've taken part in
 
-# Events and programs I've been part of
+## What programs or bootcamps have you done?
 
-[FILL IN: One opening sentence — e.g. "I try to stay active outside of work
-through programs, competitions, and community events. Here are a few that
-mattered."]
+In late 2024 I joined the Bangkit Academy machine-learning cohort. There I built
+a diabetes-prediction app called SugarCare that reached 83% accuracy, studied
+deep learning and GANs, and was recognized as an Active Participant.
 
-[FILL IN: Event name and roughly when — e.g. "Bangkit Academy, late 2024."]
-[FILL IN: What it was and what you did there, in a sentence or two. Mention any
-result, project, or recognition that came out of it.]
+## Have you organized any events?
 
-[FILL IN: Another event name and timeframe.] [FILL IN: What it was and your part
-in it. If you organized or led rather than just attended, say so — that's worth
-highlighting.]
+Yes. In August 2024 I led the student organizer team for the AWS Gen-AI Tour
+across Telkom University and Binus University. I managed the speakers, the
+materials, and the technical operations for a hands-on generative-AI event.
 
-[FILL IN: Keep adding a short paragraph per event. If you have none yet, write a
-single honest line about what you're hoping to take part in, and remove the rest.]
+## Have you taught or run study groups?
+
+I've run a lot of hands-on training. As an assistant coordinator at the SEA and
+i-Smile laboratories, I designed and delivered seven AI practicum sessions in
+Python and led machine-learning study groups for groups of 50 or more students.

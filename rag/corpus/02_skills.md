@@ -1,30 +1,21 @@
-<!--
-HOW TO FILL THIS IN
-This file answers "What are your skills?" / "What are you good at?" /
-"Do you know X?" Write it conversationally, grouped into short paragraphs by
-theme. It's fine to be honest about strength levels ("very comfortable with",
-"used a few times", "learning"). Don't just dump a keyword list — say what you
-actually do with each thing. Replace every [FILL IN: ...] and delete these
-comments when done.
--->
+# My skills
 
-# What I'm good at
+## What are you best at?
 
-[FILL IN: One opening sentence framing your skill set — e.g. "My core is
-building and deploying machine-learning systems, but I'm comfortable across the
-whole stack around them."]
+My core strength is building and deploying machine-learning systems in Python. I
+train models with TensorFlow, PyTorch, and scikit-learn, and I'm especially
+comfortable with large language models and retrieval-augmented generation (RAG),
+as well as computer vision using YOLO.
 
-When it comes to [FILL IN: your main area, e.g. "AI and machine learning"], I'm
-most comfortable with [FILL IN: the tools/languages/frameworks you use most, and
-a few words on what you build with them — e.g. "Python day to day, and I train
-and fine-tune models with PyTorch and TensorFlow"]. [FILL IN: add a sentence on
-the kind of work you've done with these, so it's concrete rather than a list.]
+## What do you use for deployment and MLOps?
 
-On the [FILL IN: second theme, e.g. "deployment / MLOps / cloud"] side, I work
-with [FILL IN: the relevant tools, and what you do with them — e.g. "Docker and
-FastAPI to wrap models as services, and I deploy and monitor them on the
-cloud"]. [FILL IN: one concrete sentence about how you've used these.]
+On the deployment side, I package models as services with FastAPI, containerize
+them with Docker, and run them on cloud platforms like Google Cloud Platform and
+Azure AI Foundry. I set up monitoring with Prometheus and Grafana so I can see
+how a system behaves once it's live.
 
-[FILL IN: Add another short paragraph for any other area worth mentioning —
-e.g. hardware, frontend, data, a domain specialty. If you're actively learning
-something, it's good to say so here in a sentence.]
+## Do you work with hardware or anything lower-level?
+
+Yes. I've built Android apps in Kotlin, programmed microcontrollers like the
+Arduino and ESP32, written C for embedded work, and used Streamlit to put quick,
+usable interfaces in front of models.

@@ -1,25 +1,20 @@
-<!--
-HOW TO FILL THIS IN
-This file answers "What do you do?" / "Are you available?" / "What are you
-looking for?" Cover your current role or situation, the kind of role you'd want
-next, whether you're open to work, your location and how you prefer to work
-(remote / hybrid / on-site / relocation), and your rough availability. Keep it
-conversational and current. Replace every [FILL IN: ...] and delete these
-comments when done.
--->
+# What I do now and what I'm looking for
 
-# What I do now and what I'm open to
+## What are you doing right now?
 
-Right now I'm [FILL IN: your current role or situation — e.g. "working as an AI
-engineer trainee at [company]" or "a recent graduate looking for my first
-full-time role"]. [FILL IN: a sentence on what that involves day to day.]
+I'm currently an AI Engineer Bootcamp Trainee at PT Berlian Sistem Informasi in
+Jakarta. There I built an end-to-end predictive-maintenance system on Google
+Cloud with Docker, FastAPI, Prometheus, and Grafana, and a RAG chatbot using
+Azure AI Foundry, LangChain, and Azure AI Search.
 
-I'm [FILL IN: "open to" / "not currently looking for"] new opportunities. The
-kind of role I'm most interested in is [FILL IN: the role type and the kind of
-work or team you want — e.g. "an AI/ML engineering role where I own things
-end-to-end, ideally somewhere I can keep learning fast"].
+## What kind of role are you looking for?
 
-On the practical side: I'm based in [FILL IN: city / country], and I'm [FILL IN:
-"open to remote, hybrid, or on-site" / your actual preference, plus whether
-you'd relocate]. I can typically start [FILL IN: your availability — e.g.
-"immediately" / "from [month]" / "with about a month's notice"].
+I'm interested in AI and machine-learning engineering roles where I can own
+systems from end to end, from the model to the deployed and monitored service,
+and keep learning quickly.
+
+## Where are you based and how do you like to work?
+
+I'm based in Indonesia and I'm open to talking about roles that are a good fit,
+including remote work. I'm happy to share more about my availability and start
+date directly when someone reaches out.
