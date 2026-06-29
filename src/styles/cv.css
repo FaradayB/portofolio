@@ -729,7 +729,7 @@ a { color: inherit; }
     color-mix(in srgb, var(--accent) 10%, transparent) 0 1px,
     transparent 1px 5px
   );
-  opacity: 0.4;
+  opacity: 0.0;
   animation: hudScan 9s linear infinite;
 }
 @keyframes hudScan {
