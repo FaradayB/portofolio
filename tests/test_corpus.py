@@ -1,23 +1,22 @@
 from pathlib import Path
 
-CV = Path("rag/corpus/cv.md")
+CORPUS = Path("rag/corpus")
+
+KNOWLEDGE_FILES = [
+    "01_who_am_i.md",
+    "02_skills.md",
+    "03_events.md",
+    "04_certificates.md",
+    "05_roles_and_availability.md",
+    "06_contact.md",
+]
 
 
-def test_corpus_exists():
-    assert CV.is_file()
+def test_knowledge_files_exist():
+    for name in KNOWLEDGE_FILES:
+        assert (CORPUS / name).is_file(), f"missing {name}"
 
 
-def test_corpus_has_sections():
-    text = CV.read_text(encoding="utf-8")
-    for header in ["# Faraday Barr Fatahillah", "## Education",
-                   "## Experience", "## Projects", "## Skills",
-                   "## Certifications", "## Contact"]:
-        assert header in text
-
-
-def test_corpus_has_key_facts():
-    text = CV.read_text(encoding="utf-8")
-    assert "AI Engineer" in text
-    assert "Telkom University" in text
-    assert "3.88" in text
-    assert "faradaybarrf@gmail.com" in text
+def test_subfolders_have_readme_instructions():
+    assert (CORPUS / "projects" / "README.md").is_file()
+    assert (CORPUS / "publications" / "README.md").is_file()

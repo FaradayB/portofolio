@@ -28,3 +28,10 @@ def test_ignores_keep_files(tmp_path):
     _write(tmp_path / "cv.md", "hi")
     docs = load_documents(str(tmp_path))
     assert [d.metadata["source"] for d in docs] == ["cv.md"]
+
+
+def test_ignores_readme_instruction_files(tmp_path):
+    _write(tmp_path / "projects" / "README.md", "how to add projects")
+    _write(tmp_path / "projects" / "project-x.md", "Project X content")
+    docs = load_documents(str(tmp_path))
+    assert [d.metadata["source"] for d in docs] == ["projects/project-x.md"]

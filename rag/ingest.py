@@ -24,6 +24,8 @@ def load_documents(corpus_dir: str) -> list[Document]:
     for path in sorted(root.rglob("*")):
         if not path.is_file() or path.name == ".keep":
             continue
+        if path.name.lower() == "readme.md":
+            continue  # folder instructions, not knowledge-base content
         rel = path.relative_to(root)
         meta = {"source": rel.as_posix(), "type": _doc_type(rel)}
         if path.suffix.lower() == ".pdf":
