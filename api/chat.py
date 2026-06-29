@@ -1,7 +1,7 @@
 import os
 from langchain_core.documents import Document
 
-INDEX_PATH = "api/_index/vectors.json"
+DEFAULT_INDEX = "cv-rag"
 K = 5
 MAX_TURNS = 10
 MAX_MESSAGE_LENGTH = 2000
@@ -23,8 +23,16 @@ def _make_embeddings():
 def get_retriever():
     global _retriever
     if _retriever is None:
-        from langchain_core.vectorstores import InMemoryVectorStore
-        store = InMemoryVectorStore.load(INDEX_PATH, _make_embeddings())
+        from langchain_pinecone import PineconeVectorStore
+        api_key = os.environ.get("PINECONE_API_KEY")
+        if not api_key:
+            raise RuntimeError("Missing PINECONE_API_KEY")
+        index_name = os.environ.get("PINECONE_INDEX") or DEFAULT_INDEX
+        store = PineconeVectorStore(
+            index_name=index_name,
+            embedding=_make_embeddings(),
+            pinecone_api_key=api_key,
+        )
         _retriever = store.as_retriever(search_kwargs={"k": K})
     return _retriever
 
@@ -95,8 +103,8 @@ def handle_request(method: str, body: dict) -> tuple[int, dict]:
     except ValueError as e:
         return 400, {"error": str(e)}
     except RuntimeError as e:
-        if "GEMINI_API_KEY" in str(e):
-            return 500, {"error": "Server missing GEMINI_API_KEY"}
+        if "API_KEY" in str(e):
+            return 500, {"error": "Server missing a required API key"}
         return 502, {"error": "The assistant is unavailable right now"}
     except Exception:
         return 502, {"error": "The assistant is unavailable right now"}

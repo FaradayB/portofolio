@@ -1,7 +1,29 @@
 # CV Companion → Python/LangChain RAG (multi-document) — Design
 
 **Date:** 2026-06-29
-**Status:** Draft (pending spec review)
+**Status:** Implemented; revised to Pinecone (see Revision below)
+
+## Revision (2026-06-29) — Pinecone vector store
+
+The original design used a committed in-memory index (`api/_index/vectors.json`
+loaded into `InMemoryVectorStore`). It was changed to a **hosted Pinecone**
+vector store. Net effects:
+
+- **Ingest** (`rag/ingest.py`): instead of dumping a JSON index, it embeds
+  chunks and **upserts to a Pinecone index** with stable per-chunk ids
+  (`"<source>#<n>"`), doing a full rebuild (delete-all then upsert) each run.
+- **Serve** (`api/chat.py`): `get_retriever()` queries a `PineconeVectorStore`
+  instead of loading a file. No committed index; `api/_index/` removed.
+- **Deps**: `langchain-pinecone` added to both `requirements.txt`.
+- **Secrets**: new `PINECONE_API_KEY` (Vercel env + GitHub Actions secret) and
+  optional `PINECONE_INDEX` (default `cv-rag`).
+- **Pinecone index**: serverless, **dimension 768, metric cosine** (matches
+  Google `text-embedding-004`).
+- **Workflow** `build-rag-index.yml`: runs ingest (upsert); no commit-back step.
+
+Everything else below (corpus layout, loaders, chunking, prompt, handler,
+HTTP contract) is unchanged. Where the text below says "InMemoryVectorStore /
+committed vectors.json", read it as the pre-revision design.
 
 ## Goal
 

@@ -3,7 +3,6 @@
   "outputDirectory": "dist",
   "functions": {
     "api/chat.py": {
-      "includeFiles": "api/_index/**",
       "maxDuration": 30
     }
   },

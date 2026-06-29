@@ -2,11 +2,11 @@ import os
 from pathlib import Path
 from langchain_core.documents import Document
 from langchain_core.embeddings import Embeddings
-from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 CHUNK_SIZE = 700
 CHUNK_OVERLAP = 100
+DEFAULT_INDEX = "cv-rag"
 
 
 def _doc_type(rel_path: Path) -> str:
@@ -44,9 +44,19 @@ def split_documents(docs: list[Document]) -> list[Document]:
     return splitter.split_documents(docs)
 
 
-def build_index(docs: list[Document], embeddings: Embeddings) -> InMemoryVectorStore:
-    chunks = split_documents(docs)
-    return InMemoryVectorStore.from_documents(chunks, embeddings)
+def make_chunk_ids(chunks: list[Document]) -> list[str]:
+    """Deterministic, stable id per chunk: "<source>#<n>".
+
+    Re-running ingest overwrites the same ids instead of creating duplicates.
+    """
+    ids: list[str] = []
+    counters: dict[str, int] = {}
+    for c in chunks:
+        src = c.metadata.get("source", "doc")
+        n = counters.get(src, 0)
+        counters[src] = n + 1
+        ids.append(f"{src}#{n}")
+    return ids
 
 
 def make_embeddings() -> Embeddings:
@@ -59,19 +69,42 @@ def make_embeddings() -> Embeddings:
     )
 
 
-def build_and_dump(corpus_dir: str, out_path: str, embeddings: Embeddings) -> None:
-    docs = load_documents(corpus_dir)
-    if not docs:
-        raise RuntimeError(f"No documents found in {corpus_dir}")
-    store = build_index(docs, embeddings)
-    out = Path(out_path)
-    out.parent.mkdir(parents=True, exist_ok=True)
-    store.dump(str(out))
-    print(f"Wrote {out} from {len(docs)} document(s)")
+def upsert_to_pinecone(
+    docs: list[Document], embeddings: Embeddings, index_name: str, api_key: str
+) -> int:
+    """Full rebuild: clear the index, then embed + upsert every chunk.
+
+    Returns the number of chunks upserted.
+    """
+    from langchain_pinecone import PineconeVectorStore
+    from pinecone import Pinecone
+
+    chunks = split_documents(docs)
+    ids = make_chunk_ids(chunks)
+
+    index = Pinecone(api_key=api_key).Index(index_name)
+    try:
+        index.delete(delete_all=True)  # raises on an empty index — safe to ignore
+    except Exception:
+        pass
+
+    store = PineconeVectorStore(index=index, embedding=embeddings)
+    store.add_documents(chunks, ids=ids)
+    return len(chunks)
 
 
 def main() -> None:
-    build_and_dump("rag/corpus", "api/_index/vectors.json", make_embeddings())
+    pinecone_key = os.environ.get("PINECONE_API_KEY")
+    if not pinecone_key:
+        raise RuntimeError("Missing PINECONE_API_KEY")
+    index_name = os.environ.get("PINECONE_INDEX") or DEFAULT_INDEX
+
+    docs = load_documents("rag/corpus")
+    if not docs:
+        raise RuntimeError("No documents found in rag/corpus")
+
+    n = upsert_to_pinecone(docs, make_embeddings(), index_name, pinecone_key)
+    print(f"Upserted {n} chunks from {len(docs)} document(s) to index '{index_name}'")
 
 
 if __name__ == "__main__":
