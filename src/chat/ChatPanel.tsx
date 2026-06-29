@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 import { ChatEngine, ChatMessage } from "./engine";
 import { RemoteEngine } from "./RemoteEngine";
-import { buildSystemPrompt } from "./systemPrompt";
 
 interface Props {
   engine?: ChatEngine;
@@ -26,10 +25,12 @@ export default function ChatPanel({ engine }: Props) {
     setLog([...history, { role: "assistant", text: "" }]);
     setStatus("thinking");
 
-    const messages: ChatMessage[] = [
-      { role: "system", content: buildSystemPrompt() },
-      ...history.map((m) => ({ role: m.role, content: m.text })),
-    ];
+    // The RAG backend builds its own grounded prompt from retrieved CV chunks,
+    // so we send only the conversation history.
+    const messages: ChatMessage[] = history.map((m) => ({
+      role: m.role,
+      content: m.text,
+    }));
 
     let acc = "";
     try {

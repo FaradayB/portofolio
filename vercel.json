@@ -1,6 +1,12 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "functions": {
+    "api/chat.py": {
+      "includeFiles": "api/_index/**",
+      "maxDuration": 30
+    }
+  },
   "rewrites": [{ "source": "/(.*)", "destination": "/" }],
   "headers": [
     {
