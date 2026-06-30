@@ -2,8 +2,11 @@
 
 ## Who are you?
 
-I'm Faraday Barr Fatahillah, an AI engineer. I build end-to-end AI systems, from
-training the model all the way to deploying and monitoring it in production.
+I am Faraday, and AI Engineer based in Jakarta, Indonesia. I build end-to-end AI systems, from training and fine-tuning models, all the way to deploying and monitoring them in production.
+
+## What do you do professionally?
+
+I design and ship end-to-end AI systems. I work with model side training, fine-tuning, evaluation, building APIs
 
 ## What is your background?
 
